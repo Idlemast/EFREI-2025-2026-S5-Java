@@ -15,11 +15,11 @@ import java.util.Scanner;
  */
 public class Etablissement {
     private static final Scanner sc = new Scanner(System.in);
-    private static final LocalDateTime now = LocalDateTime.now().withHour(10).withMinute(0).truncatedTo(MINUTES);
+    private static final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0).truncatedTo(MINUTES);
 
     private String nom;
     private final int limiteClients;
-    private final int nombreMaxCreneaux = calculCreneau(now.withHour(18).toLocalTime());
+    private final int nombreMaxCreneaux = calculCreneau(tomorrow.withHour(18).toLocalTime());
     private final int nombreMaxJours = 7;
     private final Client[] clients;
     private final RendezVous[][] planning;
@@ -44,18 +44,18 @@ public class Etablissement {
     }
 
     //Pour éviter le doublon
-    private Client ajouterClientCalcul(Client client) {
+    private Client ajouterClientCalcul(Client c) {
 	//Peut être ajouté
 	if (getNombreClients() >= 0 && getNombreClients() < limiteClients) {
 	    //On assigne à la dernière position
-	    clients[getNombreClients()] = client;
+	    clients[getNombreClients()] = c;
 	    //On swap i-1 et i si pas dans l'ordre
 	    for (int i = getNombreClients() - 1; i > 0 && clients[i - 1].placerApres(clients[i]); i--) {
-		Client temp = clients[i];
+		Client tmp = clients[i];
 		clients[i] = clients[i - 1];
-		clients[i - 1] = temp;
+		clients[i - 1] = tmp;
 	    }
-	    return client;
+	    return c;
 	}
 	return null;
     }
@@ -67,9 +67,7 @@ public class Etablissement {
     public Client ajouter(String nom, String numeroTelephone, String email) {
 	return ajouterClientCalcul(new Client(getNombreClients() + 1, nom, numeroTelephone, email));
     }
-
     
-
     //Les 2 fonctions prenaient trop de place donc fusion
     private LocalDateTime rechercherLocalDateTimeCalcul(LocalDateTime dt, boolean isDate) {
 	//Est-ce qu'on connaît déjà la date et l'heure
@@ -113,27 +111,27 @@ public class Etablissement {
 	} else {
 	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", dt.toLocalTime().truncatedTo(MINUTES));
 	    //Si avant 8h ou après 17h30 (dernier créneau)
-	    if(dt.getHour() < now.getHour() || calculCreneau(dt.toLocalTime()) > planning.length - 1){
+	    if(dt.getHour() < tomorrow.getHour() || calculCreneau(dt.toLocalTime()) > planning.length - 1){
 		System.out.format("%s%n", "L'établissement est fermé à cette heure");
 		return null;
 	    }
 	    //On boucle directement sur les jours
-	    for (int j = 0; j < planning[0].length; j++) {
-		System.out.format("[%-1s] %s ", j, now.plusDays(j + 1).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase());
+	    for (int j = 0; j < nombreMaxJours; j++) {
+		System.out.format("[%-1s] %s ", j, tomorrow.plusDays(j).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase());
 		//On vérifie si c'est un lundi et si c'est vide
 		System.out.format("%s%n",
 		    planning[calculCreneau(dt.toLocalTime())][j] != null ? "(Déjà pris)" :
-		    estFerme(now.toLocalDate().plusDays(j + 1)) ? "(fermé)" : ""
+		    estFerme(tomorrow.toLocalDate().plusDays(j)) ? "(fermé)" : ""
 		);
 	    }
-	    while (input < 0 || input > planning[0].length - 1 || planning[calculCreneau(dt.toLocalTime())][input] != null || dt.plusDays(input + 1).getDayOfWeek() == DayOfWeek.MONDAY) {
+	    while (input < 0 || input > nombreMaxJours - 1 || planning[calculCreneau(dt.toLocalTime())][input] != null || estFerme(dt.toLocalDate().plusDays(input))) {
 		System.out.format("Veuillez choisir votre créneau : %n");
 		input = Integer.parseInt(sc.nextLine());
-		if (input < 0 || input > planning[0].length - 1 || planning[calculCreneau(dt.toLocalTime())][input] != null || dt.plusDays(input + 1).getDayOfWeek() == DayOfWeek.MONDAY) {
+		if (input < 0 || input > nombreMaxJours - 1 || planning[calculCreneau(dt.toLocalTime())][input] != null || estFerme(dt.toLocalDate().plusDays(input))) {
 		    System.out.format("%s%n",
-			(input < 0 || input > planning[0].length - 1) ?
+			(input < 0 || input > nombreMaxJours - 1) ?
 			    "Ce n'est pas un créneau valide" :
-			    dt.plusDays(input + 1).getDayOfWeek() == DayOfWeek.MONDAY ?
+			    dt.plusDays(input).getDayOfWeek() == DayOfWeek.MONDAY ?
 				"L'établissement est fermé" :
 				"Le créneau est déjà pris"
 		    );
@@ -142,24 +140,24 @@ public class Etablissement {
 	    //A partir d'ici l'input est valide
 	    System.out.format("Créneau validé !%n");
 	    System.out.format("Votre créneau est le %s de %s à %s%n",
-		    dt.plusDays(input + 1).toLocalDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase(),
+		    dt.plusDays(input).toLocalDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase(),
 		    calculCreneau(calculCreneau(dt.toLocalTime().truncatedTo(MINUTES))), calculCreneau(calculCreneau(dt.toLocalTime()) + 1)
 	    );
-	    System.out.format("%s%n", dt.plusDays(input + 1));
-	    return calculCreneau(calculCreneau(dt.toLocalTime().truncatedTo(MINUTES))).atDate(dt.toLocalDate().plusDays(input + 1));
+	    System.out.format("%s%n", dt.plusDays(input));
+	    return calculCreneau(calculCreneau(dt.toLocalTime().truncatedTo(MINUTES))).atDate(dt.toLocalDate().plusDays(input));
 	}
     }
     
     public LocalDateTime rechercher(LocalDate date) {
 	//On met une heure qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherLocalDateTimeCalcul(date.atTime(now.getHour(), 0), true);
+	return rechercherLocalDateTimeCalcul(date.atTime(tomorrow.getHour(), 0), true);
     }
 
     public LocalDateTime rechercher(LocalTime time) {
 	//On met une date qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherLocalDateTimeCalcul(time.atDate(now.toLocalDate()), false);
+	return rechercherLocalDateTimeCalcul(time.atDate(tomorrow.toLocalDate()), false);
     }
 
 //    --------------------------------
@@ -196,8 +194,9 @@ public class Etablissement {
 	int inputInt = -1;
 	//Pour récupérer la date ou l'heure
 	String inputStr;
-	//On affecte à la valeur de now pour avoir la LocalDate et le LocalTime
-	LocalDateTime dt = now;
+	//On affecte à la valeur d'aujourd'hui pour avoir la LocalDate et le LocalTime
+	//Elle n'est pas comprise dans checkDate() ni dans checkTime() donc on va boucler là-dessus
+	LocalDateTime dt = tomorrow.minusDays(1).minusMinutes(1);
 	//-------------------------
 	//Booléen pour sélectionner vers quelle méthode on va s'orienter
 	while(inputInt < 0 || inputInt > 1){
@@ -221,6 +220,7 @@ public class Etablissement {
 	    }
 	    dt = rechercher(dt.toLocalDate());
 	} else {
+	    System.out.println(checkTime(dt.toLocalTime()));
 	    while(checkTime(dt.toLocalTime())){
 		//Pas de vérification du type de l'input trop chiant à faire (ex : 23:61)
 		System.out.format("Veuillez entrer une heure souhaitée : %n(dans le format suivant : hh:mm) %n");
@@ -293,7 +293,7 @@ public class Etablissement {
 	return null;
     }
     
-    
+    //A finir 
     public void planifier(){
 	Client c = planifierClient();
 	LocalDateTime dt = planifierCreneau();
@@ -305,7 +305,7 @@ public class Etablissement {
     public String printClients() {
 	String str = "";
 	//On affiche tout les clients
-	str += String.format("%nListe des clients : ");
+	str += String.format("%nListe des clients :%n");
 	//Liste vide
 	if (getNombreClients() == 0) {
 	    str += String.format("vide%n");
@@ -313,12 +313,7 @@ public class Etablissement {
 	    for (int i = 0; i < getLimiteClients(); i++) {
 		//Ignore les null
 		if (clients[i] != null) {
-		    str += String.format("%n- %s (%s, %s", clients[i].getNom(), clients[i].getNumeroClient(), clients[i].getNumeroTelephone());
-		    //Si le client a un email
-		    if (clients[i].getEmail() != null) {
-			str += String.format(", %s", clients[i].getEmail());
-		    }
-		    str += String.format(")");
+		    str += String.format("- %s (%s, %s%s)%n", clients[i].getNom(), clients[i].getNumeroClient(), clients[i].getNumeroTelephone(), clients[i].getEmail() != null ? ", " + clients[i].getEmail() : "");
 		}
 	    }
 	}
@@ -333,7 +328,7 @@ public class Etablissement {
 	str += String.format("%n%-11s", "");
 	//On affiche les jours
 	for (int j = 0; j < planning[0].length; j++) {
-	    str += String.format(" | %-20s", now.plusDays(j + 1).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
+	    str += String.format(" | %-20s", tomorrow.plusDays(j).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
 	}
 	//On boucle sur tout les créneaux
 	for (int c = 0; c < planning.length; c++) {
@@ -342,7 +337,7 @@ public class Etablissement {
 	    for (int j = 0; j < planning[c].length; j++) {
 		str += (planning[c][j] != null) ?
 		    String.format(" | %-20s", planning[c][j].getClient().getNom()) :
-		    String.format(" | %-20s", (estFerme(now.toLocalDate().plusDays(j + 1))) ?
+		    String.format(" | %-20s", (estFerme(tomorrow.toLocalDate().plusDays(j))) ?
 			"-".repeat(20) : ""
 		);
 	    }
@@ -350,13 +345,59 @@ public class Etablissement {
 	return str;
     }
     
+    //-----------------------------------------------
+    //------------PARTIE 2 : [2] afficher()----------
+    //A verifier
+    public String afficher(DayOfWeek d){
+	String str = "";
+	int index = 0;
+	for(int j = 0; j < planning[0].length; j++){
+	    if(tomorrow.plusDays(j).getDayOfWeek() == d){ index = j; }
+	}
+	str += String.format("Voici le planning du %s%n", tomorrow.plusDays(index).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
+	if(estFerme(tomorrow.toLocalDate().plusDays(index))){
+	    str += "L'établiseement est fermé le lundi";
+	    return str;
+	}
+	for(int c = 0; c < planning.length; c++){
+	    str += String.format("%n%-5s-%-5s ", calculCreneau(c), calculCreneau(c + 1));
+	    str += (planning[c][index] != null) ?
+		String.format("%s%n", "(" + planning[c][index].getClient().getNom()) + ")" : "";
+	}
+	return str;
+    }
+    
+    //A verifier
+    String afficher(String nom, String numeroTelephone){
+	String str = "";
+	int value = 0;
+	str += String.format("Voici les clients qui correspondent au nom ou au numéro de téléphone donnés:%n");
+	str += String.format("Pour le nom (%s) :%n", nom);
+	for(Client c : clients){
+	    if(c.getNom().equalsIgnoreCase(nom)) value++;
+	    str += (c.getNom().equalsIgnoreCase(nom)) ? String.format("- %s (%s, %s%s)%n", c.getNom(), c.getNumeroClient(), c.getNumeroTelephone(), c.getEmail() != null ? ", " + c.getEmail() : "") : "";
+	}
+	str += value == 0 ? String.format("Aucun client avec ce nom%n") : "";
+	value = 0;
+	str += String.format("%nPour le numéro de téléphone (%s) :%n", numeroTelephone);
+	for(Client c : clients){
+	    if(c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) value++;
+	    str += (c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) ? String.format("- %s (%s, %s%s)%n", c.getNom(), c.getNumeroClient(), c.getNumeroTelephone(), c.getEmail() != null ? ", " + c.getEmail() : "") : "";
+	}
+	str += value == 0 ? String.format("Aucun client avec ce numéro de téléphone%n") : "";
+	return str;
+    }
+    
+    
+    //-----------------------------------------------
+    
     //Retourne le LocaTime correspondant grâce à l'index
     public LocalTime calculCreneau(int c) {
-	return now.toLocalTime().plusMinutes(c * 30);
+	return tomorrow.toLocalTime().plusMinutes(c * 30);
     }
 
     public int calculCreneau(LocalTime t) {
-	int h = t.getHour() - now.getHour();
+	int h = t.getHour() - tomorrow.getHour();
 	int m = t.getMinute() < 30 ?
 	    t.getMinute() == 0 ? 0 : 1 :
 	    t.getMinute() == 30 ? 1 : 2;
@@ -370,18 +411,18 @@ public class Etablissement {
     
     public boolean checkDate(LocalDate date){
 	return estFerme(date) || //Si c'est un lundi
-	    date.isBefore(now.toLocalDate().plusDays(1)) || //Si aujourd'hui ou plus tôt
-	    date.isAfter(now.toLocalDate().plusDays(nombreMaxJours)); //Si 8 jours après ou plus tard
+	    date.isBefore(tomorrow.toLocalDate()) || //Si aujourd'hui ou plus tôt
+	    date.isAfter(tomorrow.toLocalDate().plusDays(nombreMaxJours)); //Si 8 jours après ou plus tard
     }
     
     public boolean checkTime(LocalTime time){
 	return
-	    time.getHour() < now.getHour() || //Si <10h
+	    time.getHour() < tomorrow.getHour() || //Si <10h
 	    calculCreneau(time) > nombreMaxCreneaux; //Si >18h
     }
     
     public int getDeltaJours(LocalDate date){
-	return (int) DAYS.between(now.toLocalDate(), date);
+	return (int) DAYS.between(tomorrow.toLocalDate(), date);
     }
 
     //Divison du print car trop long
@@ -404,11 +445,11 @@ public class Etablissement {
     public Client[] getClients() { return clients; }
 
     public int getNombreClients() {
-	int nombre = 0;
-	for (Client client : clients) {
-	    if (client != null) { nombre += 1; }
+	int n = 0;
+	for (Client c : clients) {
+	    if (c != null) n++;
 	}
-	return nombre;
+	return n;
     }
 
     //Pareil pour planning
