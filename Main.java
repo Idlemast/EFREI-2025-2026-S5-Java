@@ -90,14 +90,22 @@ public class Main {
 	System.out.format(line + "[4b] Classe Etablissement, rechercher : LocalDateTime%n");
 	System.out.format("On affiche tous les créneaux disponibles et on laisse l'utilisateur sélectionner%n");
 //	etablissement1.rechercher(LocalDate.now().plusDays(3));
-//	etablissement1.rechercher(LocalTime.of(8, 30));
+	etablissement1.rechercher(LocalTime.of(18, 0));
 	
 	//Ne marche pas, je comprend pas la logique de la question
 	System.out.format(line + "[4c] Classe Etablissement, ajouter : RendezVous%n");
-	System.out.format("On affiche tous les créneaux disponibles et on laisse l'utilisateur sélectionner%n");
+//	System.out.format("On affiche tous les créneaux disponibles et on laisse l'utilisateur sélectionner%n");
 //	etablissement1.ajouter(client1, LocalDateTime.now().plusHours(5).plusDays(6), PrestationExpress.CategorieVehicule.A, true);
-	
-	
-	
+
+	etablissement1.planifier();
+
+//	Etablissement etab = new Etablissement("Test", 1000);
+//	Client c1 = etab.ajouter("Alice", "0101");
+//	Client c2 = etab.ajouter("Bob", "0102");
+//	Client c3 = etab.ajouter("Charlie", "0103");
+//
+//	System.out.println(c1.getNumeroClient()); 
+//	System.out.println(c2.getNumeroClient()); 
+//	System.out.println(c3.getNumeroClient());
     }
 }
