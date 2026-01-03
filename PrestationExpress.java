@@ -18,7 +18,7 @@ public class PrestationExpress extends Prestation {
     @Override
     public String toString(){
 	String str = super.toString();
-	str += String.format("%s%n", besoinNettoyage ? "Besoin de nettoyage" : "Pas besoin de nettoyage");
+	str += String.format("%s%n%n", besoinNettoyage ? "Besoin de nettoyage" : "Pas besoin de nettoyage");
 	return str;
     }
     

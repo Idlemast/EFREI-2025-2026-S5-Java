@@ -34,7 +34,7 @@ public class Client {
 	str += String.format("Numéro du client : %s%n", numeroClient);
 	str += String.format("Nom : %s%n", nom);
 	str += String.format("Téléphone : %s%n", numeroTelephone);
-	str += String.format("Email : %s%n", (email != null) ? email : "Non renseigné");
+	str += String.format("Email : %s%n%n", (email != null) ? email : "Non renseigné");
 	return str;
     }
     

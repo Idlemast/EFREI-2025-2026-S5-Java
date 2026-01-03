@@ -17,11 +17,11 @@ public class RendezVous {
     @Override
     public String toString(){
 	String str = "";
-	str += String.format("%n[CLIENT]%n");
+	str += String.format("[CLIENT]%n");
 	str += client;
-	str += String.format("%n[PRESTATION]%n");
+	str += String.format("[PRESTATION]%n");
 	str += prestation;
-	str += String.format("%n[INFORMATIONS]%n");
+	str += String.format("[INFORMATIONS]%n");
 	str += String.format("Prix de la prestation : %s€%n", prix);
 	str += String.format("%n" + "-".repeat(30) + "%n");
 	return str;

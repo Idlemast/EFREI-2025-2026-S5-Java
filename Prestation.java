@@ -63,7 +63,7 @@ public abstract class Prestation {
     
     @Override
     public String toString() {
-        return String.format("Catégorie du véhicule : %s%n", categorieVehicule);
+        return String.format("%s%s%n", "Catégorie du véhicule : ", categorieVehicule);
     }
     
     public CategorieVehicule getCategorieVehicule(){ return categorieVehicule; }

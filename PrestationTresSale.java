@@ -34,7 +34,7 @@ public class PrestationTresSale extends Prestation {
     @Override
     public String toString(){
 	String str = super.toString();
-	str += String.format("Problème : %s%n", typeSalissure);
+	str += String.format("%s%s%n%n", "Problème : ", typeSalissure);
 	return str;
     }
     

@@ -18,7 +18,7 @@ public class PrestationSale extends Prestation {
     @Override
     public String toString(){
 	String str = super.toString();
-	str += String.format("Besoin de nettoyage%n");
+	str += String.format("%s%n%n", "Besoin de nettoyage");
 	return str;
     }
 }
