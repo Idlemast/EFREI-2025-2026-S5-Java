@@ -43,22 +43,22 @@ public class Main {
 	System.out.format(line + "[1c] Classe RendezVous%n");
 	RendezVous rendezVous1 = new RendezVous(client1, prestationExpress1, 99);
 	RendezVous rendezVous2 = new RendezVous(client2, prestationSale1, 110);
-	System.out.format("%nRendez-vous 1 : %n");
+	System.out.format("Rendez-vous 1 : %n");
 	System.out.println(rendezVous1);
-	System.out.format("%nRendez-vous 2 : %n");
+	System.out.format("Rendez-vous 2 : %n");
 	System.out.println(rendezVous2);
 	
 	System.out.format(line + "[2] Classe Etablissement%n");
 	Etablissement etablissement1 = new Etablissement("Château de Versailles", 3);
-	System.out.format("%nEtablissement 1 (3 client max) : %n");
+	System.out.format("Etablissement 1 (3 client max) : %n");
 	System.out.println(etablissement1);
 	
 	System.out.format(line + "[3a] Classe Etablissement, rechercher() : Client%n");
-	System.out.format("%nRechercher un client (devrait retourner null puisqu'il n'y pas encore ajouter()) : %n");
+	System.out.format("Rechercher un client (devrait retourner null puisqu'il n'y pas encore ajouter()) : %n");
 	System.out.println("Recherche de Giorno Giovanna : " + etablissement1.rechercher("Giorno Giovanna", "07 77 77 77 77"));
 	
 	System.out.format(line + "[3b] Classe Client, placerApres() : boolean%n");
-	System.out.format("%nTrier 2 clients sur le nom pour voir qui est plus loin dans l'alphabet : %n");
+	System.out.format("Trier 2 clients sur le nom pour voir qui est plus loin dans l'alphabet : %n");
 	System.out.format("(si les 2 ont la même valeur, renvoie aussi false)%n");
 	System.out.format("%s vs %s%n", client1.getNom(), client2.getNom());
 	System.out.format("Est-ce que %s doit être placé après %s : %s%n", client1.getNom(), client2.getNom(), client1.placerApres(client2));
@@ -98,6 +98,7 @@ public class Main {
 //	etablissement1.ajouter(client1, LocalDateTime.now().plusHours(5).plusDays(6), PrestationExpress.CategorieVehicule.A, true);
 
 	etablissement1.planifier();
+
 
 //	Etablissement etab = new Etablissement("Test", 1000);
 //	Client c1 = etab.ajouter("Alice", "0101");

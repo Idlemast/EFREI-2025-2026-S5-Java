@@ -31,11 +31,10 @@ public class Client {
     @Override
     public String toString(){
 	String str = "";
-	str += String.format("%nNuméro du client : %s", numeroClient);
-	str += String.format("%nNom : %s", nom);
-	str += String.format("%nTéléphone : %s", numeroTelephone);
-	if(email != null) str += String.format("%nEmail : %s", email);
-	str += String.format("%n");
+	str += String.format("Numéro du client : %s%n", numeroClient);
+	str += String.format("Nom : %s%n", nom);
+	str += String.format("Téléphone : %s%n", numeroTelephone);
+	str += String.format("Email : %s%n", (email != null) ? email : "Non renseigné");
 	return str;
     }
     

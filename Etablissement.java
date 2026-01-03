@@ -32,16 +32,58 @@ public class Etablissement {
 	this.planning = new RendezVous[nombreMaxCreneaux][nombreMaxJours];
     }
 
-    public Client rechercher(String nom, String numeroTelephone) {
+    //Structure similaire pour les 2, donc on combine
+    //C'est juste le if qui va changer (soit nom + téléphone, soit numéro client)
+    public Client rechercherClientCalc(String args, boolean parNumeroClient){
 	if (getNombreClients() != 0) {
 	    for (Client client : clients) {
-		if (client.getNom().equalsIgnoreCase(nom) && client.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) {
-		    return client;
+		if(parNumeroClient){
+		    if (client.getNumeroClient() == Integer.parseInt(args)) {
+			return client;
+		    }
+		} else {
+		    if (client.getNom().equalsIgnoreCase(args.split(";")[0]) && client.getNumeroTelephone().equalsIgnoreCase(args.split(";")[1])) {
+			return client;
+		    }
 		}
 	    }
 	}
 	return null;
+    } 
+    
+    //On convertit les arguments en 1 seul String pour tout passer dans la fonction de calcul
+    public Client rechercher(String nom, String numeroTelephone) {
+	return rechercherClientCalc(nom.concat(";").concat(numeroTelephone), false);
     }
+    
+    public Client rechercher(int numeroClient) {
+	return rechercherClientCalc(Integer.toString(numeroClient), true);
+    }
+    
+    
+    
+    
+//    public Client rechercher(String nom, String numeroTelephone) {
+//	if (getNombreClients() != 0) {
+//	    for (Client client : clients) {
+//		if (client.getNom().equalsIgnoreCase(nom) && client.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) {
+//		    return client;
+//		}
+//	    }
+//	}
+//	return null;
+//    }
+//    
+//    public Client rechercher(int numeroClient){
+//	if (getNombreClients() != 0) {
+//	    for (Client client : clients) {
+//		if (client.getNumeroClient() == numeroClient) {
+//		    return client;
+//		}
+//	    }
+//	}
+//	return null;
+//    }
 
     //Pour éviter le doublon
     private Client ajouterClientCalcul(Client c) {
@@ -77,7 +119,7 @@ public class Etablissement {
 	    //Soit c'est fermé, soit la date donnée n'est pas dans les 7 prochains jours
 	    //On compare Date + 1 à Date + 1 car on ne veut pas la date d'aujour
 	    if (checkDate(dt.toLocalDate())) {
-		System.out.format(estFerme(dt.toLocalDate()) ? "Pas de créneau le lundi%n" : "Date non comprise dans les 7 prochains jours%n");
+		System.out.format("%s%n", estFerme(dt.toLocalDate()) ? "Pas de créneau le lundi" : "Date non comprise dans les 7 prochains jours");
 		return null;
 	    } else {
 		int j = getDeltaJours(dt.toLocalDate());
@@ -89,7 +131,7 @@ public class Etablissement {
 		}
 		//Soit la valeur est hors limite (première fois à -1) soit le créneau est déjà pris
 		while (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
-		    System.out.format("Veuillez choisir votre créneau : %n");
+		    System.out.format("%s%n", "Veuillez choisir votre créneau :");
 		    input = Integer.parseInt(sc.nextLine());
 		    //On vérifie comme tout à l'heure et on affiche le message correspondant
 		    //On vérifie la limite sinon crash avec != null
@@ -101,7 +143,7 @@ public class Etablissement {
 		    }
 		}
 		//A partir d'ici l'input est valide
-		System.out.format("Créneau validé !%n");
+		System.out.format("%s%n", "Créneau validé !");
 		System.out.format("Votre créneau est le %s de %s à %s%n",
 			dt.toLocalDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase(),
 			calculCreneau(input), calculCreneau(input + 1)
@@ -138,8 +180,8 @@ public class Etablissement {
 		}
 	    }
 	    //A partir d'ici l'input est valide
-	    System.out.format("Créneau validé !%n");
-	    System.out.format("Votre créneau est le %s de %s à %s%n",
+	    System.out.format("%s%n", "Créneau validé !");
+	    System.out.format("Votre créneau est le %s de %s à %s",
 		    dt.plusDays(input).toLocalDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase(),
 		    calculCreneau(calculCreneau(dt.toLocalTime().truncatedTo(MINUTES))), calculCreneau(calculCreneau(dt.toLocalTime()) + 1)
 	    );
@@ -181,9 +223,9 @@ public class Etablissement {
     
     public Client planifierClient(){
 	String nom, numeroTelephone;
-	System.out.format("Rentrez votre nom : %n");
+	System.out.format("%s%n", "Rentrez votre nom :");
 	nom = sc.nextLine();
-	System.out.format("Rentrez votre numéro de téléphone : %n");
+	System.out.format("%s%n", "Rentrez votre numéro de téléphone :");
 	numeroTelephone = sc.nextLine();
 	//Si le client est déjà dans la liste, on le récupère sinon on le créé
 	return rechercher(nom, numeroTelephone) != null ? rechercher(nom, numeroTelephone) : ajouter(nom, numeroTelephone);
@@ -200,7 +242,7 @@ public class Etablissement {
 	//-------------------------
 	//Booléen pour sélectionner vers quelle méthode on va s'orienter
 	while(inputInt < 0 || inputInt > 1){
-	    System.out.format("Comment voulez vous prendre votre rendez-vous ? %n[0] Date %n[1] Heure %n");
+	    System.out.format("Comment voulez vous prendre votre rendez-vous ? %n[0] Date %n[1] Heure%n");
 	    inputInt = Integer.parseInt(sc.nextLine());
 	    if(inputInt < 0 || inputInt > 1){
 		System.out.format("%s n'est pas une valeur valide%n", inputInt);
@@ -211,7 +253,7 @@ public class Etablissement {
 	if(inputInt == 0){
 	    while(checkDate(dt.toLocalDate())){
 		//Pas de vérification du type de l'input trop chiant à faire (ex : 2025-15-156)
-		System.out.format("Veuillez entrer une date souhaitée : %n(dans le format suivant : YYYY-MM-DD et sur les 7 jours qui suivent) %n");
+		System.out.format("Veuillez entrer une date souhaitée : %n(dans le format suivant : YYYY-MM-DD et sur les 7 jours qui suivent)%n");
 		inputStr = sc.nextLine();
 		dt = dt.withYear(Integer.parseInt(inputStr.split("-")[0])).withMonth(Integer.parseInt(inputStr.split("-")[1])).withDayOfMonth(Integer.parseInt(inputStr.split("-")[2]));
 		if(checkDate(dt.toLocalDate())){
@@ -223,7 +265,7 @@ public class Etablissement {
 	    System.out.println(checkTime(dt.toLocalTime()));
 	    while(checkTime(dt.toLocalTime())){
 		//Pas de vérification du type de l'input trop chiant à faire (ex : 23:61)
-		System.out.format("Veuillez entrer une heure souhaitée : %n(dans le format suivant : hh:mm) %n");
+		System.out.format("Veuillez entrer une heure souhaitée : %n(dans le format suivant : hh:mm)%n");
 		inputStr = sc.nextLine();
 		dt = dt.withHour(Integer.parseInt(inputStr.split(":")[0])).withMinute(Integer.parseInt(inputStr.split(":")[1]));
 		if(checkTime(dt.toLocalTime())){
@@ -248,7 +290,7 @@ public class Etablissement {
 		input == 2 ? Prestation.CategorieVehicule.C :
 		null;
 	    if(categorieVehicule == null){
-		System.out.format("Votre choix de type de véhicule n'est pas valide%n");
+		System.out.format("%s%n", "Votre choix de type de véhicule n'est pas valide");
 	    }
 	}
 	return categorieVehicule;
@@ -260,7 +302,7 @@ public class Etablissement {
 	    System.out.format("Veuillez choir votre type de prestation :%n[0] Prestation Express%n[1] Prestation sur véhicule sale%n[2] Prestation sur véhicule très sale%n");
 	    input = Integer.parseInt(sc.nextLine());
 	    if(input < 0 || input > 2){
-		System.out.format("Votre choix de type de prestation n'est pas valide%n");
+		System.out.format("%s%n", "Votre choix de type de prestation n'est pas valide");
 	    }
 	}
 	switch(input){
@@ -271,10 +313,10 @@ public class Etablissement {
 		} else {
 		    input = -1;
 		    while(input < 0 || input > 1){
-			System.out.format("Est-ce que votre véhicule à besoin d'être nettoyé ?%n[0] Oui%n[1] Non%n");
+			System.out.format("%s%n%s%n%s%n", "Est-ce que votre véhicule à besoin d'être nettoyé ?", "[0] Oui", "[1] Non");
 			input = Integer.parseInt(sc.nextLine());
 			if(input < 0 || input > 1){
-			    System.out.format("Votre choix n'est pas valide%n");
+			    System.out.format("%s%n", "Votre choix n'est pas valide");
 			}
 		    }
 		    //PrestationExpress
@@ -283,7 +325,7 @@ public class Etablissement {
 	    }
 	    //PrestationTresSale
 	    default -> {
-		System.out.format("Quel est votre problème ?%n");
+		System.out.format("%s%n", "Quel est votre problème ?");
 		for(int i = 0; i < PrestationTresSale.TypeSalissure.values().length; i++){
 		    System.out.format("[%s] %s%n", i, PrestationTresSale.TypeSalissure.values()[i]);
 		}
@@ -305,10 +347,10 @@ public class Etablissement {
     public String printClients() {
 	String str = "";
 	//On affiche tout les clients
-	str += String.format("%nListe des clients :%n");
+	str += String.format("%s%n", "Liste des clients :");
 	//Liste vide
 	if (getNombreClients() == 0) {
-	    str += String.format("vide%n");
+	    str += String.format("%s%n", "vide");
 	} else {
 	    for (int i = 0; i < getLimiteClients(); i++) {
 		//Ignore les null
@@ -317,7 +359,6 @@ public class Etablissement {
 		}
 	    }
 	}
-	str += String.format("%n");
 	return str;
     }
 
@@ -325,7 +366,7 @@ public class Etablissement {
     public String printPlanning() {
 	String str = "";
 	//Pour mettre chaque jour (lundi jusqu'à dimanche)
-	str += String.format("%n%-11s", "");
+	str += String.format("%-11s", "");
 	//On affiche les jours
 	for (int j = 0; j < planning[0].length; j++) {
 	    str += String.format(" | %-20s", tomorrow.plusDays(j).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
@@ -356,11 +397,11 @@ public class Etablissement {
 	}
 	str += String.format("Voici le planning du %s%n", tomorrow.plusDays(index).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
 	if(estFerme(tomorrow.toLocalDate().plusDays(index))){
-	    str += "L'établiseement est fermé le lundi";
+	    str += String.format("%s%n", "L'établiseement est fermé le lundi");
 	    return str;
 	}
 	for(int c = 0; c < planning.length; c++){
-	    str += String.format("%n%-5s-%-5s ", calculCreneau(c), calculCreneau(c + 1));
+	    str += String.format("%-5s-%-5s ", calculCreneau(c), calculCreneau(c + 1));
 	    str += (planning[c][index] != null) ?
 		String.format("%s%n", "(" + planning[c][index].getClient().getNom()) + ")" : "";
 	}
@@ -368,23 +409,38 @@ public class Etablissement {
     }
     
     //A verifier
-    String afficher(String nom, String numeroTelephone){
+    public String afficher(String nom, String numeroTelephone){
 	String str = "";
 	int value = 0;
-	str += String.format("Voici les clients qui correspondent au nom ou au numéro de téléphone donnés:%n");
+	str += String.format("%s%n", "Voici les clients qui correspondent au nom ou au numéro de téléphone donnés:");
 	str += String.format("Pour le nom (%s) :%n", nom);
 	for(Client c : clients){
 	    if(c.getNom().equalsIgnoreCase(nom)) value++;
 	    str += (c.getNom().equalsIgnoreCase(nom)) ? String.format("- %s (%s, %s%s)%n", c.getNom(), c.getNumeroClient(), c.getNumeroTelephone(), c.getEmail() != null ? ", " + c.getEmail() : "") : "";
 	}
-	str += value == 0 ? String.format("Aucun client avec ce nom%n") : "";
+	str += String.format("%s%n", value == 0 ? "Aucun client avec ce nom" : "");
 	value = 0;
-	str += String.format("%nPour le numéro de téléphone (%s) :%n", numeroTelephone);
+	str += String.format("Pour le numéro de téléphone (%s) :%n", numeroTelephone);
 	for(Client c : clients){
 	    if(c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) value++;
 	    str += (c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) ? String.format("- %s (%s, %s%s)%n", c.getNom(), c.getNumeroClient(), c.getNumeroTelephone(), c.getEmail() != null ? ", " + c.getEmail() : "") : "";
 	}
-	str += value == 0 ? String.format("Aucun client avec ce numéro de téléphone%n") : "";
+	str += String.format("%s%n", value == 0 ? "Aucun client avec ce numéro de téléphone" : "");
+	return str;
+    }
+    
+    //A verifier
+    //Afficher les rendez-vous selon le numéro client
+    public String afficher(int n){
+	Client c = rechercher(n);
+	String str = "";
+	str += String.format("Voici les rendez-vous du client n°%s%n", n);
+	if(c != null){
+	    
+	} else {
+	    str += String.format("Il n'y a pas pour cet établissement un client avec %s comme numéro client", n);
+	    return str;
+	}
 	return str;
     }
     
@@ -429,7 +485,7 @@ public class Etablissement {
     @Override
     public String toString() {
 	String str = "";
-	str += String.format("%nNom de l'établissement : %s%n", nom);
+	str += String.format("Nom de l'établissement : %s%n", nom);
 	str += printClients();
 	str += printPlanning();
 	return str;
