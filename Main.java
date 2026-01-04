@@ -90,11 +90,12 @@ public class Main {
 	
 	System.out.format(line + "PARTIE 1 [4c] Classe Etablissement, ajouter() : RendezVous%n%n");
 	System.out.format("%s", etablissement1.printPlanning());
-	System.out.format("%s%n%n", "Pour l'instant il n'y a aucun rendez-vous ajouté au planning, donc ajoutons un rendez-vous");
-	etablissement1.ajouter(client1, LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
+	System.out.format("%s%n%s%n%n", "Pour l'instant il n'y a aucun rendez-vous ajouté au planning, donc ajoutons un rendez-vous", "Ajoutons un créneau dans 6 jours à 10h, libre de modifier");
+	RendezVous rdv1 = etablissement1.ajouter(client1, LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
 	System.out.format("%s%n%n", "Nous pouvons constater que le créneau sélectionné est rempli");
 
+	
 	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
 	//Retirer le commentaire pour lancer la fonction
 	etablissement1.planifier();
@@ -102,8 +103,7 @@ public class Main {
 	System.out.format(line + "PARTIE 2 [02] Classe Etablissement, afficher : String%n%n");
 	System.out.format("%s%n%s%n%n", "On va d'abord tester l'affichage des rendez-vous sur un jour donné", "Lundi étant fermé, il affiche que c'est fermé");
 	System.out.format(etablissement1.afficher(DayOfWeek.MONDAY));
-	System.out.format(etablissement1.afficher(DayOfWeek.TUESDAY));
-	System.out.format(etablissement1.afficher(DayOfWeek.WEDNESDAY));
+	System.out.format(etablissement1.afficher(etablissement1.getDateRendezVous(rdv1).getDayOfWeek()));
 	System.out.format("%s%n%n", "Pour le reste ça semble bon");
 	System.out.format("%s%n%s%n%s%n%n", "Ensuite pour les clients selon le nom ou le numéro client", "Nous allons prendre Giorno Giovanna pour exemple", "Pour rappel : Giorno Giovanna (07 77 77 77 77)");
 	System.out.format("%s%n%n%s", "Avec une erreur sur le nom (Jonathan Joestar)", etablissement1.afficher("Jonathan Joestar", "07 77 77 77 77"));
