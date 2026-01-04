@@ -1,4 +1,3 @@
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,14 +35,15 @@ public class Etablissement {
     //C'est juste le if qui va changer (soit nom + téléphone, soit numéro client)
     private Client rechercherCalc(String args, boolean parNumeroClient){
 	if (getNombreClients() != 0) {
-	    for (Client client : clients) {
+	    //On ne fait pas for(Client client : clients) car il va boucler sur les null aussi
+	    for(int c = 0; c < getNombreClients(); c++) {
 		if(parNumeroClient){
-		    if (client.getNumeroClient() == Integer.parseInt(args)) {
-			return client;
+		    if (clients[c].getNumeroClient() == Integer.parseInt(args)) {
+			return clients[c];
 		    }
 		} else {
-		    if (client.getNom().equalsIgnoreCase(args.split(";")[0]) && client.getNumeroTelephone().equalsIgnoreCase(args.split(";")[1])) {
-			return client;
+		    if (clients[c].getNom().equalsIgnoreCase(args.split(";")[0]) && clients[c].getNumeroTelephone().equalsIgnoreCase(args.split(";")[1])) {
+			return clients[c];
 		    }
 		}
 	    }

@@ -98,6 +98,7 @@ public class Main {
 	
 	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
 	//Retirer le commentaire pour lancer la fonction
+	//Attention : l'établissement à 3 clients maximum (déjà atteint) donc à changer
 	etablissement1.planifier();
 
 	System.out.format(line + "PARTIE 2 [02] Classe Etablissement, afficher : String%n%n");
