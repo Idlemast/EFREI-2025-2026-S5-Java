@@ -176,13 +176,16 @@ public class Etablissement {
 	return rechercherLocalDateTimeCalcul(time.atDate(tomorrow.toLocalDate()), false);
     }
 
-    //Les 3 fonctions font la même chose donc on combine*
+    //Les 3 fonctions font la même chose donc on combine
     //Aucune logique juste mettre la date dans le planning
+    //Mais faut aussi vérifier que le client est dans la liste
     private RendezVous ajouterCalc(RendezVous rdv, LocalDateTime dt){
-	int j = getDeltaJours(dt.toLocalDate());
-	int c = calculCreneau(dt.toLocalTime());
-	planning[c][j] = rdv;
-	return rdv;
+	if(rechercher(rdv.getClient().getNom(), rdv.getClient().getNumeroTelephone()) != null){
+	    int j = getDeltaJours(dt.toLocalDate());
+	    int c = calculCreneau(dt.toLocalTime());
+	    planning[c][j] = rdv;
+	    return rdv;
+	} else { return null; }
     }
     
     //PrestationExpress
