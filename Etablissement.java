@@ -7,6 +7,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -501,6 +502,14 @@ public class Etablissement {
 	return str;
     }
     
+    public LocalDateTime getDateTimeJour(DayOfWeek dw){
+	LocalDateTime dt = null;
+	for(int i = 0; i < nombreMaxJours; i++){
+	    if(tomorrow.plusDays(i).getDayOfWeek() == dw) dt = tomorrow.plusDays(i);
+	}
+	return dt;
+    }
+    
     public String getJourTexte(LocalDateTime date){
 	return date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase();
     }
@@ -583,7 +592,6 @@ public class Etablissement {
 		    fw.write(String.format("%s%n", getDateTimeRendezVous(planning[c][j])));
 		    fw.write(String.format("%s%n", planning[c][j].getClient().getNumeroClient()));
 		    fw.write(String.format("%s", planning[c][j].versFichier()));
-		    
 		}
 	    }
 	}
@@ -598,29 +606,37 @@ public class Etablissement {
 	    String s, separator = " : ";
 	    LocalDateTime dt;
 	    Client c;
-	    
-	    for(int i = 0; i < getNombreRDV(); i++){
-		s = br.readLine();
-		
-		if(s.split(separator).length == 3){
-		    clients[i] = new Client(
-			    Integer.parseInt(s.split(separator)[0]),
-			    s.split(separator)[1],
-			    s.split(separator)[2]
-		    );
-		} else{
-		    clients[i] = new Client(
-			    Integer.parseInt(s.split(separator)[0]),
-			    s.split(separator)[1],
-			    s.split(separator)[2],
-			    s.split(separator)[3]
-		    );
+	    Prestation.CategorieVehicule categorie;
+	    boolean stop = false;
+	    while(stop == false){
+		try {
+		    dt = LocalDateTime.parse(br.readLine());
+		    System.out.format("%s%s%n", "ok", dt);
+		    //Logiquement, le client est dans la liste des clients
+		    c = rechercher(Integer.parseInt(br.readLine()));
+		    s = br.readLine();
+		    categorie = Prestation.CategorieVehicule.valueOf(s.split(separator)[0]);
+		    //PrestationExpress ou PrestationTresSale
+		    if(s.split(separator).length == 3){
+			try {
+			    Integer.parseInt(s.split(separator)[1]);
+			    //PrestationTresSale
+			    ajouter(c, dt, categorie, PrestationTresSale.TypeSalissure.valueOf("_".concat(s.split(separator)[1])));
+			} catch(NumberFormatException e){
+			    //PrestationExpress
+			    ajouter(c, dt, categorie, Boolean.parseBoolean(s.split(separator)[1]));
+			}
+		    } else {
+			//PrestationSale
+			ajouter(c, dt, categorie);
+		    }
+		} catch(Exception e) {
+		    //Si c'est la fin du fichier
+		    stop = !stop;
 		}
 	    }
 	} catch (FileNotFoundException ex) {
-	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-	} catch (IOException ex) {
-	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	    System.out.format("%s%n", "Le fichier rdv.txt n'existe pas");
 	}
     }
 

@@ -95,7 +95,7 @@ public class Main {
 	RendezVous rdv1 = etablissement1.ajouter(client1, LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
 	System.out.format("%s%n%s%n%n", "L'établissement est complet donc cela n'est pris en compte", "Mais si nous prenons Giorno Giovanna qui lui est dans la liste des clients");
-	etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
+	etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), etablissement1.getDateTimeJour(DayOfWeek.FRIDAY).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
 	
 	
@@ -122,9 +122,11 @@ public class Main {
 	    Etablissement etablissement2 = new Etablissement("EFREI 2", 3);
 	    etablissement2.depuisFichierClient();
 	    System.out.format(etablissement2.printClients());
-	    etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), LocalDateTime.now().plusDays(4).withHour(12).withMinute(0), PrestationTresSale.CategorieVehicule.B, PrestationTresSale.TypeSalissure._3);
+	    etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), etablissement1.getDateTimeJour(DayOfWeek.FRIDAY).withHour(12).withMinute(0), PrestationTresSale.CategorieVehicule.B, PrestationTresSale.TypeSalissure._3);
 	    etablissement1.versFichierRDV();
 	    etablissement2.depuisFichierRDV();
+	    System.out.format(etablissement2.printPlanning());
+	    
 	} catch (IOException ex) {
 	    System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
 	}
