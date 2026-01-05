@@ -17,7 +17,7 @@ public abstract class Prestation {
         public String toString() { return label; }
     }
     //Et on l'utilise en tant que propriété
-    private CategorieVehicule categorieVehicule;
+    protected CategorieVehicule categorieVehicule;
     
     public Prestation(CategorieVehicule categorieVehicule){
 	this.categorieVehicule = categorieVehicule;
@@ -60,6 +60,9 @@ public abstract class Prestation {
     protected double nettoyageInterieur() {
         return categorieVehicule == CategorieVehicule.C ? 40 : 30;
     }
+    
+    
+    public abstract String versFichier();
     
     @Override
     public String toString() {

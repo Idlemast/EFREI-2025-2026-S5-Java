@@ -16,6 +16,11 @@ public class PrestationExpress extends Prestation {
     }
     
     @Override
+    public String versFichier(){
+	return String.format("%s : %s", categorieVehicule.name(), besoinNettoyage);
+    }
+    
+    @Override
     public String toString(){
 	String str = super.toString();
 	str += String.format("%s%n%n", besoinNettoyage ? "Besoin de nettoyage" : "Pas besoin de nettoyage");
@@ -24,6 +29,5 @@ public class PrestationExpress extends Prestation {
     
     //Getter + Setter
     public boolean getBesoinNettoyage(){ return besoinNettoyage; }
-    public void setBesoinNettoyage(boolean besoinNettoyage){ this.besoinNettoyage = besoinNettoyage; }
     
 }

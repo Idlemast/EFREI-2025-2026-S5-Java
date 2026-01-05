@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,7 +14,6 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- *
  * @author William
  */
 public class Etablissement {
@@ -32,6 +36,7 @@ public class Etablissement {
     }
 
     //Structure similaire pour les 2, donc on combine
+    //Il faut bloucler sur les éléments de la liste
     //C'est juste le if qui va changer (soit nom + téléphone, soit numéro client)
     private Client rechercherCalc(String args, boolean parNumeroClient){
 	if (getNombreClients() != 0) {
@@ -78,19 +83,19 @@ public class Etablissement {
     }
     
     public Client ajouter(String nom, String numeroTelephone) {
-	return ajouterCalc(new Client(getNombreClients() + 1, nom, numeroTelephone));
+	return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone));
     }
 
     public Client ajouter(String nom, String numeroTelephone, String email) {
-	return ajouterCalc(new Client(getNombreClients() + 1, nom, numeroTelephone, email));
+	return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone, email));
     }
     
     //Les 2 fonctions prenaient trop de place donc fusion
-    private LocalDateTime rechercherLocalDateTimeCalcul(LocalDateTime dt, boolean isDate) {
+    private LocalDateTime rechercherCalc(LocalDateTime dt, boolean isDate) {
 	//Est-ce qu'on connaît déjà la date et l'heure
 	int input = -1;
 	if (isDate) {
-	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", getJourTexte(dt.toLocalDate()));
+	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", getJourTexte(dt));
 	    //Soit c'est fermé, soit la date donnée n'est pas dans les 7 prochains jours
 	    //On compare Date + 1 à Date + 1 car on ne veut pas la date d'aujour
 	    if (checkDate(dt.toLocalDate())) {
@@ -120,7 +125,7 @@ public class Etablissement {
 		//A partir d'ici l'input est valide
 		System.out.format("%s%n", "Créneau validé !");
 		System.out.format("Votre créneau est le %s de %s à %s%n",
-			getJourTexte(dt.toLocalDate()),
+			getJourTexte(dt),
 			calculCreneau(input), calculCreneau(input + 1)
 		);
 		return calculCreneau(input).atDate(dt.toLocalDate());
@@ -134,7 +139,7 @@ public class Etablissement {
 	    }
 	    //On boucle directement sur les jours
 	    for (int j = 0; j < nombreMaxJours; j++) {
-		System.out.format("[%-1s] %s ", j, getJourTexte(dt.toLocalDate().plusDays(j)));
+		System.out.format("[%-1s] %s ", j, getJourTexte(dt.plusDays(j)));
 		//On vérifie si c'est un lundi et si c'est vide
 		System.out.format("%s%n",
 		    planning[calculCreneau(dt.toLocalTime())][j] != null ? "(Déjà pris)" :
@@ -157,7 +162,7 @@ public class Etablissement {
 	    //A partir d'ici l'input est valide
 	    System.out.format("%n%s%n", "Créneau validé !");
 	    System.out.format("Votre créneau est le %s de %s à %s%n%n",
-		    getJourTexte(dt.toLocalDate().plusDays(input)),
+		    getJourTexte(dt.plusDays(input)),
 		    calculCreneau(calculCreneau(dt.toLocalTime())), calculCreneau(calculCreneau(dt.toLocalTime()) + 1)
 	    );
 	    return calculCreneau(calculCreneau(dt.toLocalTime())).atDate(dt.toLocalDate().plusDays(input));
@@ -167,13 +172,13 @@ public class Etablissement {
     public LocalDateTime rechercher(LocalDate date) {
 	//On met une heure qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherLocalDateTimeCalcul(date.atTime(tomorrow.getHour(), 0), true);
+	return rechercherCalc(date.atTime(tomorrow.getHour(), 0), true);
     }
 
     public LocalDateTime rechercher(LocalTime time) {
 	//On met une date qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherLocalDateTimeCalcul(time.atDate(tomorrow.toLocalDate()), false);
+	return rechercherCalc(time.atDate(tomorrow.toLocalDate()), false);
     }
 
     //Les 3 fonctions font la même chose donc on combine
@@ -353,7 +358,7 @@ public class Etablissement {
 	str += String.format("%-11s", "");
 	//On affiche les jours
 	for (int jourTexte = 0; jourTexte < nombreMaxJours; jourTexte++) {
-	    str += String.format(" | %-20s", getJourTexte(tomorrow.toLocalDate().plusDays(jourTexte)));
+	    str += String.format(" | %-20s", getJourTexte(tomorrow.plusDays(jourTexte)));
 	}
 	//On boucle sur tout les créneaux
 	for (int c = 0; c < nombreMaxCreneaux; c++) {
@@ -373,14 +378,13 @@ public class Etablissement {
     
     //-----------------------------------------------
     //------------PARTIE 2 : [2] afficher()----------
-    //A verifier
     public String afficher(DayOfWeek d){
 	String str = "";
 	int index = 0;
 	for(int j = 0; j < nombreMaxJours; j++){
 	    if(tomorrow.plusDays(j).getDayOfWeek() == d){ index = j; }
 	}
-	str += String.format("Voici le planning du %s%n", getJourTexte(tomorrow.toLocalDate().plusDays(index)));
+	str += String.format("Voici le planning du %s%n", getJourTexte(tomorrow.plusDays(index)));
 	if(estFerme(tomorrow.toLocalDate().plusDays(index))){
 	    str += String.format("%s%n%n", "L'établiseement est fermé le lundi");
 	    return str;
@@ -394,7 +398,6 @@ public class Etablissement {
 	return str;
     }
     
-    //A verifier
     public String afficher(String nom, String numeroTelephone){
 	String str = "";
 	int value = 0;
@@ -429,7 +432,7 @@ public class Etablissement {
 	    for (int c = 0; c < nombreMaxCreneaux; c++) {
 		for (int j = 0; j < nombreMaxJours; j++) {
 		    if(planning[c][j] != null){
-			if (planning[c][j] != null) nbRDV++;
+			nbRDV++;
 			str += planning[c][j];
 		    }
 		}
@@ -437,7 +440,7 @@ public class Etablissement {
 	    str += nbRDV == 0 ? String.format("%s%n", "Ce client n'a aucun rendez-vous'") : "";
 	    return str;
 	} else {
-	    str += String.format("Il n'y a pas pour cet établissement un client avec %s comme numéro client", n);
+	    str += String.format("%s%s%n", "Pour cet établissement, il n'y a pas de client n°", n);
 	    return str;
 	}
     }
@@ -475,10 +478,10 @@ public class Etablissement {
 	    calculCreneau(time) > nombreMaxCreneaux; //Si >18h
     }
     
-    public LocalDate getDateRendezVous(RendezVous rdv){
+    public LocalDateTime getDateTimeRendezVous(RendezVous rdv){
 	for (int c = 0; c < nombreMaxCreneaux; c++) {
 	    for (int j = 0; j < nombreMaxJours; j++) {
-		if(planning[c][j] == rdv) return tomorrow.toLocalDate().plusDays(j);
+		if(planning[c][j] == rdv) return tomorrow.plusDays(j).plusMinutes(c * 30);
 	    }
 	}
 	return null;
@@ -498,7 +501,7 @@ public class Etablissement {
 	return str;
     }
     
-    public String getJourTexte(LocalDate date){
+    public String getJourTexte(LocalDateTime date){
 	return date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE).toUpperCase();
     }
 
@@ -508,9 +511,7 @@ public class Etablissement {
     //Pas de set pour limiteCLients car un établissement à un nombre fixe de clients possible
     public int getLimiteClients() { return limiteClients; }
 
-    //Pas de set pour clients car géré par d'autres méthodes
-    public Client[] getClients() { return clients; }
-
+    //Pour éviter de créer une variable + incrément, cette fonction calcule directement le nombre de clients 
     public int getNombreClients() {
 	int n = 0;
 	for (Client c : clients) {
@@ -518,9 +519,110 @@ public class Etablissement {
 	}
 	return n;
     }
-
-    //Pareil pour planning
-    public RendezVous[][] getPlanning() { return planning; }
+    
+    public int getNombreRDV() {
+	int n = 0;
+	for (int c = 0; c < nombreMaxCreneaux; c++) {
+	    for (int j = 0; j < nombreMaxJours; j++) {
+		if(planning[c][j] != null) n++;
+	    }
+	}
+	return n;
+    }
+    
+    
+    
+    public void versFichierClients() throws IOException{
+	FileWriter fw = new FileWriter("clients.txt", false);
+	for (Client c : clients) {
+	    if (c != null) fw.write(c.versFichier());
+	}
+	fw.close();
+    }
+    
+    //On suppose que le fichier respecte la limite de clients de l'établissement
+    public void depuisFichierClient(){
+	BufferedReader br;
+	try {
+	    br = new BufferedReader(new FileReader("clients.txt"));
+	    String s, separator = " : ";
+	    for(int i = 0; i < getLimiteClients(); i++){
+		s = br.readLine();
+		//On utilise pas ajouter() car la fonction assigne un
+		//numeroClient qui n'est pas celui du fichier
+		//C'est donc un import en full, sans ajout manuel
+		//Il faut quand même vérifier chaque client
+		//Sans email et avec
+		if(s.split(separator).length == 3){
+		    clients[i] = new Client(
+			    Integer.parseInt(s.split(separator)[0]),
+			    s.split(separator)[1],
+			    s.split(separator)[2]
+		    );
+		} else{
+		    clients[i] = new Client(
+			    Integer.parseInt(s.split(separator)[0]),
+			    s.split(separator)[1],
+			    s.split(separator)[2],
+			    s.split(separator)[3]
+		    );
+		}
+	    }
+	} catch (FileNotFoundException ex) {
+	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	} catch (IOException ex) {
+	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	}
+    }
+    
+    public void versFichierRDV() throws IOException{
+	FileWriter fw = new FileWriter("rdv.txt", false);
+	for (int c = 0; c < nombreMaxCreneaux; c++) {
+	    for (int j = 0; j < nombreMaxJours; j++) {
+		if(planning[c][j] != null){
+		    fw.write(String.format("%s%n", getDateTimeRendezVous(planning[c][j])));
+		    fw.write(String.format("%s%n", planning[c][j].getClient().getNumeroClient()));
+		    fw.write(String.format("%s", planning[c][j].versFichier()));
+		    
+		}
+	    }
+	}
+	fw.close();
+    }
+    
+    //On suppose que le fichier respecte la limite de clients de l'établissement
+    public void depuisFichierRDV(){
+	BufferedReader br;
+	try {
+	    br = new BufferedReader(new FileReader("rdv.txt"));
+	    String s, separator = " : ";
+	    LocalDateTime dt;
+	    Client c;
+	    
+	    for(int i = 0; i < getNombreRDV(); i++){
+		s = br.readLine();
+		
+		if(s.split(separator).length == 3){
+		    clients[i] = new Client(
+			    Integer.parseInt(s.split(separator)[0]),
+			    s.split(separator)[1],
+			    s.split(separator)[2]
+		    );
+		} else{
+		    clients[i] = new Client(
+			    Integer.parseInt(s.split(separator)[0]),
+			    s.split(separator)[1],
+			    s.split(separator)[2],
+			    s.split(separator)[3]
+		    );
+		}
+	    }
+	} catch (FileNotFoundException ex) {
+	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	} catch (IOException ex) {
+	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	}
+    }
 
     //Si l'établissement se fait racheter
     public void setNom(String nom) { this.nom = nom; }

@@ -1,22 +1,21 @@
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author William
  */
 public class Client {
+    public static int countNumerosClients = 0;
+//    public static ArrayList<int> listClients;
     private int numeroClient;
     private String nom;
     private String numeroTelephone;
     //Si email non renseigné, valeur par défaut
     private String email = null;
     
+    //Pour Client, le numeroClient est spécifié par la classe
     public Client(int numeroClient, String nom, String numeroTelephone){
-	    this.numeroClient = numeroClient;
-	    this.nom = nom;
-	    this.numeroTelephone = numeroTelephone;
+	this.numeroClient = numeroClient;
+	this.nom = nom;
+	this.numeroTelephone = numeroTelephone;
     }
     
     public Client(int numeroClient, String nom, String numeroTelephone, String email){
@@ -27,6 +26,14 @@ public class Client {
     public boolean placerApres(Client client){
 	return this.nom.compareToIgnoreCase(client.getNom()) > 0 ? true : false;
     };
+    
+    public String versFichier(){
+	return String.format(
+	    "%s : %s : %s%s%n",
+		numeroClient, nom, numeroTelephone,
+		String.format(email != null ? " : " + email : ""
+	    ));
+    }
     
     @Override
     public String toString(){

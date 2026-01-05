@@ -15,6 +15,12 @@ public class PrestationSale extends Prestation {
 	return super.nettoyage() + nettoyageInterieur();
     }
     
+    
+    @Override
+    public String versFichier(){
+	return String.format("%s", categorieVehicule.name());
+    }
+    
     @Override
     public String toString(){
 	String str = super.toString();

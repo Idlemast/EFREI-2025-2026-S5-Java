@@ -5,10 +5,10 @@
 public class PrestationTresSale extends Prestation {
     //On créé une sous-classe TypeSalissure qui agit comme un sélecteur entre différents choix
     public static enum TypeSalissure {
-        A("Tâches de nourriture"),
-        B("Tâches de boue"),
-        C("Tâches de transpiration"),
-	D("Tâches de graisse");
+        _1("Tâches de nourriture"),
+        _2("Tâches de boue"),
+        _3("Tâches de transpiration"),
+	_4("Tâches de graisse");
 
         private final String label;
 
@@ -29,6 +29,11 @@ public class PrestationTresSale extends Prestation {
     @Override
     protected double nettoyage(){
 	return super.nettoyage() + nettoyageInterieur();
+    }
+    
+    @Override
+    public String versFichier(){
+	return String.format("%s : %s", categorieVehicule.name(), typeSalissure.name().substring(1));
     }
     
     @Override

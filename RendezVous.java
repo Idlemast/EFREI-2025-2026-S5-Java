@@ -27,6 +27,11 @@ public class RendezVous {
 	return str;
     }
     
+    
+    public String versFichier(){
+	return String.format("%s : %s%n", prestation.versFichier(), prix);
+    }
+    
     //Getter + Setter
     public Client getClient(){ return client; }
     public Prestation getPrestation(){ return prestation; }

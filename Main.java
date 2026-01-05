@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +16,8 @@ public class Main {
 	
 	System.out.format(line + "PARTIE 1 [1a] Classe Client%n%n");
 	System.out.format("%s%n%n", "On va créer 2 clients, un sans email et l'autre avec");
-	Client client1 = new Client(1, "William", "06 66 66 66 66");
-	Client client2 = new Client(2, "Paul", "06 22 22 22 22", "hsiao-wen-paul.lo@efrei.net");
+	Client client1 = new Client(Client.countNumerosClients++, "William", "06 66 66 66 66");
+	Client client2 = new Client(Client.countNumerosClients++, "Paul", "06 22 22 22 22", "hsiao-wen-paul.lo@efrei.net");
 	System.out.format("%s%n%n%s", "Sans email : ", client1);
 	System.out.format("%s%n%n%s", "Avec email : ", client2);
 	
@@ -25,8 +26,8 @@ public class Main {
 	PrestationExpress prestationExpress1 = new PrestationExpress(Prestation.CategorieVehicule.A, true);
 	PrestationExpress prestationExpress2 = new PrestationExpress(Prestation.CategorieVehicule.C, false);
 	PrestationSale prestationSale1 = new PrestationSale(Prestation.CategorieVehicule.A);
-	PrestationTresSale prestationTresSale1 = new PrestationTresSale(Prestation.CategorieVehicule.B, PrestationTresSale.TypeSalissure.A);
-	PrestationTresSale prestationTresSale2 = new PrestationTresSale(Prestation.CategorieVehicule.C, PrestationTresSale.TypeSalissure.C);
+	PrestationTresSale prestationTresSale1 = new PrestationTresSale(Prestation.CategorieVehicule.B, PrestationTresSale.TypeSalissure._1);
+	PrestationTresSale prestationTresSale2 = new PrestationTresSale(Prestation.CategorieVehicule.C, PrestationTresSale.TypeSalissure._3);
 	System.out.format("%s%n%n%s", "Prestation Express avec Nettoyage :", prestationExpress1);
 	System.out.format("%s%n%n%s", "Prestation Express sans Nettoyage :", prestationExpress2);
 	System.out.format("%s%n%n%s", "Prestation Véhicule sale :", prestationSale1);
@@ -58,9 +59,9 @@ public class Main {
 	
 	System.out.format(line + "PARTIE 1 [3c] Classe Client, ajouter() : Client%n%n");
 	System.out.format("Ajouter un Client dans Etablissement, mais est-il dejà instantié ? %n");
-	System.out.format("On suppose que non, et que c'est l'établissement qui va créer les clients%n");
+	System.out.format("On suppose que non, et que c'est Etablissement qui va créer les clients%n");
 	System.out.format("On va ajouter un client Giorno Giovanna : %n%n");
-	etablissement1.ajouter("Giorno Giovanna", "07 77 77 77 77");
+	Client client3 = etablissement1.ajouter("Giorno Giovanna", "07 77 77 77 77");
 	System.out.format(etablissement1.printClients());
 	System.out.format("Giorno Giovanna a bien été ajouté%n");
 	System.out.format("On va ajouter un autre client Bruno Bucciarati : %n%n");
@@ -94,25 +95,39 @@ public class Main {
 	RendezVous rdv1 = etablissement1.ajouter(client1, LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
 	System.out.format("%s%n%s%n%n", "L'établissement est complet donc cela n'est pris en compte", "Mais si nous prenons Giorno Giovanna qui lui est dans la liste des clients");
-	etablissement1.ajouter(etablissement1.rechercher("Giorno Giovanna", "07 77 77 77 77"), LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
+	etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), LocalDateTime.now().plusDays(6).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
 	
 	
 	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
 	//Retirer le commentaire pour lancer la fonction
-	//Attention : l'établissement à 3 clients maximum (déjà atteint) donc à changer
+	//Attention : l'établissement à 3 clients maximum (déjà atteint) donc à changer (etablissememnt1)
 	//etablissement1.planifier();
 
 	System.out.format(line + "PARTIE 2 [02] Classe Etablissement, afficher : String%n%n");
 	System.out.format("%s%n%s%n%n", "On va d'abord tester l'affichage des rendez-vous sur un jour donné", "Lundi étant fermé, il affiche que c'est fermé");
 	System.out.format(etablissement1.afficher(DayOfWeek.MONDAY));
-	System.out.format(etablissement1.afficher(etablissement1.getDateRendezVous(rdv1).getDayOfWeek()));
+	System.out.format(etablissement1.afficher(etablissement1.getDateTimeRendezVous(rdv1).getDayOfWeek()));
 	System.out.format("%s%n%n", "Pour le reste ça semble bon");
 	System.out.format("%s%n%s%n%s%n%n", "Ensuite pour les clients selon le nom ou le numéro client", "Nous allons prendre Giorno Giovanna pour exemple", "Pour rappel : Giorno Giovanna (07 77 77 77 77)");
 	System.out.format("%s%n%n%s", "Avec une erreur sur le nom (Jonathan Joestar au lieu de Giorno Giovanna)", etablissement1.afficher("Jonathan Joestar", "07 77 77 77 77"));
 	System.out.format("%s%n%n%s", "Avec une erreur sur le numéro de téléphone (06 77 77 77 77 au lieu de 07 77 77 77 77)", etablissement1.afficher("Giorno Giovanna", "06 77 77 77 77"));
 	System.out.format("%s%n%n", "C'est correct");
-//	System.out.format("%s%n%n", "Nous allons maintenant vérifier que ");
+	System.out.format("%s%n%n", "Nous allons maintenant vérifier qu'on puisse afficher les clients selon l'id");
+	System.out.format("%s%n%n%s%n%n", "Avec un client qui n'est pas dans la liste de clients", etablissement1.afficher(client1.getNumeroClient()));
+	System.out.format("%s%n%n%s%n%n", "Avec un client qui est dans la liste de clients", etablissement1.afficher(client3.getNumeroClient()));
+	System.out.format("%s", etablissement1.printClients());
+	try {
+	    etablissement1.versFichierClients();
+	    Etablissement etablissement2 = new Etablissement("EFREI 2", 3);
+	    etablissement2.depuisFichierClient();
+	    System.out.format(etablissement2.printClients());
+	    etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), LocalDateTime.now().plusDays(4).withHour(12).withMinute(0), PrestationTresSale.CategorieVehicule.B, PrestationTresSale.TypeSalissure._3);
+	    etablissement1.versFichierRDV();
+	    etablissement2.depuisFichierRDV();
+	} catch (IOException ex) {
+	    System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	}
 	
 	
     }
