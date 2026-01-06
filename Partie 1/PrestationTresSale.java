@@ -3,8 +3,10 @@
  * @author William
  */
 public class PrestationTresSale extends Prestation {
-    //On créé une sous-classe TypeSalissure qui agit comme un sélecteur entre différents choix
+    //On créé une sous-classe TypeSalissure qui agit
+    //comme un sélecteur entre différents choix
     public static enum TypeSalissure {
+	//Sous la forme _numéro car permet de récupérer le numéro après
         _1("Tâches de nourriture"),
         _2("Tâches de boue"),
         _3("Tâches de transpiration"),

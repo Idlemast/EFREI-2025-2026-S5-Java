@@ -10,6 +10,7 @@ public class PrestationExpress extends Prestation {
 	this.besoinNettoyage = besoinNettoyage;
     }
     
+    //On override pour si on a besoin d'un nettoyage ou pas
     @Override
     protected double nettoyage(){
 	return besoinNettoyage ? super.nettoyage() + nettoyageInterieur() : super.nettoyage();

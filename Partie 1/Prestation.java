@@ -3,7 +3,8 @@
  * @author William
  */
 public abstract class Prestation {
-    //On créé une sous-classe CategorieVehicule qui agit comme un sélecteur entre différents choix
+    //On créé une sous-classe CategorieVehicule qui
+    //agit comme un sélecteur entre différents choix définis
     public static enum CategorieVehicule {
         A("Citadines"),
         B("Berlines"),
@@ -23,6 +24,8 @@ public abstract class Prestation {
 	this.categorieVehicule = categorieVehicule;
     }
     
+    //On calcule les prix selon la catégorie du véhicule
+    //En protected car on veut que les classes filles puissent aussi accéder 
     protected double prelavage(){
 	double prix = 5;
         prix = switch (categorieVehicule) {
@@ -61,7 +64,7 @@ public abstract class Prestation {
         return categorieVehicule == CategorieVehicule.C ? 40 : 30;
     }
     
-    
+    //Pour dire que chaque Prestation doit avoir une méthode versFichier()
     public abstract String versFichier();
     
     @Override

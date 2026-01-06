@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Scanner;
 
 /**
  *
@@ -127,10 +128,48 @@ public class Main {
 	    etablissement2.depuisFichierRDV();
 	    System.out.format(etablissement2.printPlanning());
 	    
+	    
+	    
+	    
+	    
+	    
 	} catch (IOException ex) {
 	    System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
 	}
 	
 	
+    }
+    
+    public void menu(){
+	Scanner sc = new Scanner(System.in);
+	int exit = -1;
+	Etablissement etablissement3 = new Etablissement("EFREI 3", 5);
+	etablissement3.depuisFichierClient();
+	etablissement3.depuisFichierRDV();
+	while(exit != 8){
+	    exit = -1;
+	    if(exit < 0 || exit > 8){
+		System.out.format("%s%n", "Que voulez vous faire ?");
+		System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%n",
+			"[0] Rechercher un client",
+			"[1] Ajouter un client",
+			"[2] Rechercher un créneau par jour",
+			"[3] Rechercher un créneau par heure",
+			"[4] Planifier un rendez-vous",
+			"[5] Afficher le planning sur un jour donné",
+			"[6] Afficher selon le nom ou le numéro de téléphone",
+			"[7] Afficher les rendez-vous selon le numéro client",
+			"[8] Quitter le programme");
+		try {
+		    exit = Integer.parseInt(sc.nextLine());
+		} catch(NumberFormatException e) {
+		    exit = -1;
+		}
+		if(exit < 0 || exit > 8) System.out.format("%s%n", "La valeur n'est pas valide");
+		switch(exit){
+		    
+		}
+	    }
+	}
     }
 }

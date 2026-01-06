@@ -3,8 +3,8 @@
  * @author William
  */
 public class Client {
+    
     public static int countNumerosClients = 0;
-//    public static ArrayList<int> listClients;
     private int numeroClient;
     private String nom;
     private String numeroTelephone;
@@ -13,6 +13,7 @@ public class Client {
     
     //Pour Client, le numeroClient est spécifié par la classe
     public Client(int numeroClient, String nom, String numeroTelephone){
+	countNumerosClients++;
 	this.numeroClient = numeroClient;
 	this.nom = nom;
 	this.numeroTelephone = numeroTelephone;
@@ -32,7 +33,8 @@ public class Client {
 	    "%s : %s : %s%s%n",
 		numeroClient, nom, numeroTelephone,
 		String.format(email != null ? " : " + email : ""
-	    ));
+	    )
+	);
     }
     
     @Override
