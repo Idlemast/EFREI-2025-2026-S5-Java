@@ -15,8 +15,9 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * @author William
+GRP : William WAN & Hsiao-Wen-Paul LO
  */
+ 
 public class Etablissement {
     private static final Scanner sc = new Scanner(System.in);
     private static final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0).truncatedTo(MINUTES);

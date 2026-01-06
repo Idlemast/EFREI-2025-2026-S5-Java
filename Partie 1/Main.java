@@ -7,9 +7,9 @@ import java.time.LocalTime;
 import java.util.Scanner;
 
 /**
- *
- * @author William
+GRP : William WAN & Hsiao-Wen-Paul LO
  */
+ 
 public class Main {
     
     public static void main(String[] args) {

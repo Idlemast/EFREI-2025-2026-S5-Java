@@ -1,7 +1,7 @@
 /**
- *
- * @author William
+GRP : William WAN & Hsiao-Wen-Paul LO
  */
+
 public class PrestationTresSale extends Prestation {
     //On créé une sous-classe TypeSalissure qui agit
     //comme un sélecteur entre différents choix
@@ -27,10 +27,29 @@ public class PrestationTresSale extends Prestation {
 	this.typeSalissure = typeSalissure;
     }
     
-    //a faire
+    private double surcout() {
+        switch (typeSalissure) {
+            case _1: return 5.0;
+            case _2: return 3.0;
+            case _3: return 4.0;
+            case _4: return 8.0;
+            default: return 2.0;
+        }
+    }
+
     @Override
-    protected double nettoyage(){
-	return super.nettoyage() + nettoyageInterieur();
+    protected double lavage() {
+        return super.lavage() + surcout();
+    }
+
+    @Override
+    protected double prelavage() {
+        return super.prelavage() + surcout();
+    }
+    
+    @Override
+    protected double nettoyage() {
+        return prelavage() + lavage() + sechage() + nettoyageInterieur();
     }
     
     @Override

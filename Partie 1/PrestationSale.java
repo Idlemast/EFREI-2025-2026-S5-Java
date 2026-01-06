@@ -1,7 +1,7 @@
 /**
- *
- * @author William
+GRP : William WAN & Hsiao-Wen-Paul LO
  */
+ 
 public class PrestationSale extends Prestation {
     
     public PrestationSale(CategorieVehicule categorieVehicule){

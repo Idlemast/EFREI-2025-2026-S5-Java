@@ -1,7 +1,7 @@
 /**
- *
- * @author William
+GRP : William WAN & Hsiao-Wen-Paul LO
  */
+ 
 public class RendezVous {
     //Le client et la prestation ne changeront probablement pas
     private final Client client;
