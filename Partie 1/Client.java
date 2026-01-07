@@ -1,7 +1,7 @@
 /**
-GRP : William WAN & Hsiao-Wen-Paul LO
+ *
+ *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
- 
 public class Client {
     
     public static int countNumerosClients = 0;

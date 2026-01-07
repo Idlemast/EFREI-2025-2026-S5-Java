@@ -1,7 +1,7 @@
 /**
-GRP : William WAN & Hsiao-Wen-Paul LO
+ *
+ *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
- 
 public abstract class Prestation {
     //On créé une sous-classe CategorieVehicule qui
     //agit comme un sélecteur entre différents choix définis

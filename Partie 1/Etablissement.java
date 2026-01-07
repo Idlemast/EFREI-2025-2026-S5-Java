@@ -15,9 +15,8 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
-GRP : William WAN & Hsiao-Wen-Paul LO
+ *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
- 
 public class Etablissement {
     private static final Scanner sc = new Scanner(System.in);
     private static final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0).truncatedTo(MINUTES);
@@ -179,27 +178,26 @@ public class Etablissement {
 		System.out.format("Veuillez choisir votre créneau : %n");
 		try {
 		    input = Integer.parseInt(sc.nextLine());
+		    //Si rentre un nombre non indexé
+		    if (input < 0 || input > nombreMaxJours - 1 ||
+			//ou que le créneau est déjà pris
+			planning[calculerCreneau(dt.toLocalTime())][input] != null ||
+			//ou que c'est fermé
+			estFerme(dt.toLocalDate().plusDays(input))
+		    ) {
+			System.out.format("%s%n",
+			    //Si nombre non valide
+			    (input < 0 || input > nombreMaxJours - 1) ?
+				"Ce n'est pas un créneau valide" :
+				//Sinon si est fermé
+				estFerme(dt.plusDays(input).toLocalDate()) ?
+				    "L'établissement est fermé" :
+				    //Sinon le créneau est déjà pris
+				    "Le créneau est déjà pris"
+			);
+		    }
 		} catch(NumberFormatException e){
 		    System.out.format("%s%n", "Ce n'est pas un créneau valide");
-		    input = -1;
-		}
-		//Si rentre un nombre non indexé
-		if (input < 0 || input > nombreMaxJours - 1 ||
-		    //ou que le créneau est déjà pris
-		    planning[calculerCreneau(dt.toLocalTime())][input] != null ||
-		    //ou que c'est fermé
-		    estFerme(dt.toLocalDate().plusDays(input))
-		) {
-		    System.out.format("%s%n",
-			//Si nombre non valide
-			(input < 0 || input > nombreMaxJours - 1) ?
-			    "Ce n'est pas un créneau valide" :
-			    //Sinon si est fermé
-			    estFerme(dt.plusDays(input).toLocalDate()) ?
-				"L'établissement est fermé" :
-				//Sinon le créneau est déjà pris
-				"Le créneau est déjà pris"
-		    );
 		}
 	    }
 	    //A partir d'ici l'input est valide
@@ -292,11 +290,10 @@ public class Etablissement {
 	    System.out.format("%n%s%n%s%n%s%n", "Comment voulez vous prendre votre rendez-vous ?", "[0] Date", "[1] Heure");
 	    try {
 		inputInt = Integer.parseInt(sc.nextLine());
+		if(inputInt < 0 || inputInt > 1) System.out.format("%s %s%n", inputInt, "n'est pas une valeur valide");
 	    } catch(NumberFormatException e) {
-		inputInt = -1;
-		System.out.format("%s%n", "L'input n'est pas une valeur valide");
+		System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
 	    }
-	    if(inputInt < 0 || inputInt > 1) System.out.format("%s %s%n", inputInt, "n'est pas une valeur valide");
 	}
 	//------------------------------------
 	//Si date (= 0)
@@ -312,10 +309,11 @@ public class Etablissement {
 			.withMonth(Integer.parseInt(inputStr.split("-")[1]))
 			//Jour
 			.withDayOfMonth(Integer.parseInt(inputStr.split("-")[2]));
+		    if(verifierDate(dt.toLocalDate())) System.out.format("%n%s %s%n", dt.toLocalDate(), " n'est pas une date valide");
 		} catch(NumberFormatException e){
-		    //Juste pour éviter l'erreur
+		    //Pour éviter l'erreur
+		    System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
 		}
-		if(verifierDate(dt.toLocalDate())) System.out.format("%n%s %s%n", dt.toLocalDate(), "%s n'est pas une date valide");
 	    }
 	    System.out.format("%n");
 	    dt = rechercher(dt.toLocalDate());
@@ -331,8 +329,10 @@ public class Etablissement {
 		    dt = dt.withHour(Integer.parseInt(inputStr.split(":")[0]))
 			//Minute
 			.withMinute(Integer.parseInt(inputStr.split(":")[1]));
-		} catch(NumberFormatException | DateTimeParseException e){}
-		if(verifierTime(dt.toLocalTime())) System.out.format("%n%s %s%n", dt.toLocalTime(), "n'est pas une heure valide");
+		    if(verifierTime(dt.toLocalTime())) System.out.format("%n%s %s%n", dt.toLocalTime(), "n'est pas une heure valide");
+		} catch(NumberFormatException e){
+		    System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
+		}
 	    }
 	    System.out.format("%n");
 	    dt = rechercher(dt.toLocalTime());
@@ -341,24 +341,25 @@ public class Etablissement {
     }
     
     public Prestation.CategorieVehicule planifierCategorieVehicule(){
-	int input;
+	int input = -1;
 	Prestation.CategorieVehicule categorieVehicule = null;
-	while(categorieVehicule == null){
+	while(input < 0 || input > 2){
 	    System.out.format("%n%s%n%s%n%s%n%s%n",
 		"Veuillez choir votre type de véhicule :",
 		"[0] Citadines", "[1] Berlines",
 		"[2] Monospaces et 4x4");
 	    try {
 		input = Integer.parseInt(sc.nextLine());
-	    } catch(NumberFormatException e){ input = -1; }
+		if(input < 0 || input > 2){
+		    System.out.format("%s%s%n", input, " n'est pas un choix valide");
+		}
+	    } catch(NumberFormatException e){
+		System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
+	    }
 	    categorieVehicule =
 		input == 0 ? Prestation.CategorieVehicule.A :
 		input == 1 ? Prestation.CategorieVehicule.B : 
-		input == 2 ? Prestation.CategorieVehicule.C :
-		null;
-	    if(categorieVehicule == null){
-		System.out.format("%s%n", "Votre choix de type de véhicule n'est pas valide");
-	    }
+		Prestation.CategorieVehicule.C;
 	}
 	return categorieVehicule;
     }
@@ -383,8 +384,10 @@ public class Etablissement {
 		    "[2] Prestation sur véhicule très sale");
 		try {
 		    input = Integer.parseInt(sc.nextLine());
-		} catch(NumberFormatException e){ input = -1; }
-		if(input < 0 || input > 2) System.out.format("%s%n", "Votre choix de type de prestation n'est pas valide");
+		    if(input < 0 || input > 2) System.out.format("%s%n", "Votre choix de type de prestation n'est pas valide");
+		} catch(NumberFormatException e){
+		    System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
+		}
 	    }
 	    switch(input){
 		case 0, 1 -> {
@@ -400,8 +403,10 @@ public class Etablissement {
 				"[1] Non");
 			    try {
 				input = Integer.parseInt(sc.nextLine());
-			    } catch(NumberFormatException e){ input = -1; }
-			    if(input < 0 || input > 1) System.out.format("%n%s%n", "Votre choix n'est pas valide");
+				if(input < 0 || input > 1) System.out.format("%n%s %s%n", input, "n'est pas un choix valide");
+			    } catch(NumberFormatException e){
+				System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
+			    }
 			}
 			//PrestationExpress
 			rdv = ajouter(c, dt, categorieVehicule, input == 0);
@@ -417,8 +422,11 @@ public class Etablissement {
 			}
 			try {
 			    input = Integer.parseInt(sc.nextLine());
-			} catch(NumberFormatException e){ input = -1; }
-			if(input < 0 || input > PrestationTresSale.TypeSalissure.values().length - 1) System.out.format("%n%s%n", "Votre choix n'est pas valide");
+			    if(input < 0 || input > PrestationTresSale.TypeSalissure.values().length - 1) System.out.format("%n%s%n", "Votre problème n'est pas valide");
+			} catch(NumberFormatException e){
+			    System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
+			}
+			
 		    }
 		    rdv = ajouter(c, dt, categorieVehicule, PrestationTresSale.TypeSalissure.values()[input]);
 		}
@@ -427,6 +435,7 @@ public class Etablissement {
 	System.out.format("%n");
     }
     
+    //NE PAS ENCORE EN COMPTE SI LE CLIENT N'EST PAS DANS LA LISTE CLIENT
     public String afficher(DayOfWeek d){
 	String str = "";
 	//On va récupérer l'index du jour souhaité
@@ -439,7 +448,7 @@ public class Etablissement {
 	}
 	//Sinon on affiche chaque créneau
 	for(int c = 0; c < nombreMaxCreneaux; c++){
-	    str += String.format("%-5s-%-5s ", Etablissement.this.calculerCreneau(c), Etablissement.this.calculerCreneau(c + 1));
+	    str += String.format("%-5s-%-5s ", calculerCreneau(c), this.calculerCreneau(c + 1));
 	    str += String.format("%s%n", (planning[c][index] != null) ?
 		"(" + planning[c][index].getClient().getNom() + ")" : "");
 	}
@@ -504,7 +513,10 @@ public class Etablissement {
 		if (c != null) fw.write(c.versFichier());
 	    }
 	    fw.close();
-	} catch(IOException e){}
+	    System.out.format("%s%n", "La liste des clients a bien été exportée");
+	} catch(IOException e){
+	    System.out.format("%s%n", "Le fichier clients.txt n'a pas pu être créé");
+	}
     }
     
     //On suppose que le fichier respecte la limite de clients de l'établissement
@@ -535,10 +547,10 @@ public class Etablissement {
 		    );
 		}
 	    }
-	} catch (FileNotFoundException ex) {
-	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-	} catch (IOException ex) {
-	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+	} catch (IOException e) {
+	    System.getLogger(Etablissement.class.getName()).log(System.Logger.Level.ERROR, (String) null, e);
+	} catch (NullPointerException e) {
+	    //Fin du fichier
 	}
     }
     
@@ -556,7 +568,7 @@ public class Etablissement {
 	    }
 	    fw.close();
 	} catch (IOException e) {
-	    System.out.format("%s%n", "Le fichier n'a pas été trouvé");
+	    System.out.format("%s%n", "Le fichier n'a pas pu être créé");
 	}
     }
     
@@ -638,12 +650,15 @@ public class Etablissement {
     }
     
     public LocalDateTime getDateTimeRendezVous(RendezVous rdv){
-	for (int c = 0; c < nombreMaxCreneaux; c++) {
-	    for (int j = 0; j < nombreMaxJours; j++) {
-		//On balaye tout les créneaux pour retrouver le LocalDateTime correspondant
-		if(planning[c][j] == rdv) return tomorrow.plusDays(j).plusMinutes(c * 30);
+	if(getNombreRDV() != 0){
+	    for (int c = 0; c < nombreMaxCreneaux; c++) {
+		for (int j = 0; j < nombreMaxJours; j++) {
+		    //On balaye tout les créneaux pour retrouver le LocalDateTime correspondant
+		    if(rdv == planning[c][j]) return tomorrow.plusDays(j).plusMinutes(c * 30);
+		}
 	    }
 	}
+	System.out.format("%s%n", "Pas de créneau retrouvé");
 	return null;
     }
     
@@ -664,7 +679,7 @@ public class Etablissement {
     
     //Renvoie l'index d'un jour donné
     public int getJourIndex(DayOfWeek dw){
-	int index = -1;
+	int index = 0;
 	for(int i = 0; i < nombreMaxJours; i++){
 	    if(tomorrow.plusDays(i).getDayOfWeek() == dw) index = i;
 	}
@@ -739,6 +754,12 @@ public class Etablissement {
 	}
 	str += String.format("%n%n");
 	return str;
+    }
+    
+    public String getErrorString(Exception e){
+	String error = e.getMessage();
+	return error.substring(error.indexOf("\"") + 1, error.lastIndexOf("\""));
+	
     }
     
     //Divison du print car trop long

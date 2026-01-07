@@ -1,7 +1,7 @@
 /**
-GRP : William WAN & Hsiao-Wen-Paul LO
+ *
+ *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
-
 public class PrestationTresSale extends Prestation {
     //On créé une sous-classe TypeSalissure qui agit
     //comme un sélecteur entre différents choix
@@ -36,20 +36,20 @@ public class PrestationTresSale extends Prestation {
             default: return 2.0;
         }
     }
-
-    @Override
-    protected double lavage() {
-        return super.lavage() + surcout();
-    }
-
+    
     @Override
     protected double prelavage() {
         return super.prelavage() + surcout();
     }
     
     @Override
-    protected double nettoyage() {
-        return prelavage() + lavage() + sechage() + nettoyageInterieur();
+    protected double lavage() {
+        return super.lavage() + surcout();
+    }
+    
+    @Override
+    protected double nettoyage(){
+	return prelavage() + lavage() + sechage() + nettoyageInterieur();
     }
     
     @Override
