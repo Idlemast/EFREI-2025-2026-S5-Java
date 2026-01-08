@@ -25,7 +25,7 @@ public class Client {
     }
     
     public boolean placerApres(Client client){
-	return this.nom.compareToIgnoreCase(client.getNom()) > 0 ? true : false;
+	return this.nom.compareToIgnoreCase(client.getNom()) > 0;
     };
     
     public String versFichier(){
