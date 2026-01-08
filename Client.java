@@ -13,7 +13,6 @@ public class Client {
     
     //Pour Client, le numeroClient est spécifié par la classe
     public Client(int numeroClient, String nom, String numeroTelephone){
-	countNumerosClients++;
 	this.numeroClient = numeroClient;
 	this.nom = nom;
 	this.numeroTelephone = numeroTelephone;
