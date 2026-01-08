@@ -11,7 +11,10 @@ public class Client {
     //Si email non renseigné, valeur par défaut
     private String email = null;
     
-    //Pour Client, le numeroClient est spécifié par la classe
+    //Pour Client, le numeroClient est spécifié par les classes externes qui instancie Client ici Etablissement
+    //Car si Client venait à s'auto-incrémenter, alors le constructeur avec numéro Client de l'énoncé ne sert à rien
+    //Et vu que c'est la consigne venait de ajouter() : Client, c'est cohérent
+    //Et pour la Partie 2, cela se confirme puisqu'on à les numéros clients qui ne sont pas les mêmzs
     public Client(int numeroClient, String nom, String numeroTelephone){
 	this.numeroClient = numeroClient;
 	this.nom = nom;

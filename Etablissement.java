@@ -131,19 +131,22 @@ public class Etablissement {
 		//Soit la valeur est hors limite (première fois à -1) soit le créneau est déjà pris
 		while (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
 		    System.out.format("%s%n", "Veuillez choisir votre créneau :");
-		    input = Integer.parseInt(sc.nextLine());
-		    //On vérifie comme tout à l'heure et on affiche le message correspondant
-		    //On vérifie la limite sinon crash avec != null
-		    if (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
+		    try {
+			input = Integer.parseInt(sc.nextLine());
+			if (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
 			System.out.format("%s%n", input < 0 || input > planning.length - 1 ?
 			    "Ce n'est pas dans la sélection" :
 			    "Le créneau est déjà pris"
 			);
 		    }
+		    } catch(NumberFormatException e){ System.out.format("%s%n", "Ce n'est pas une valeur valide"); }
+		    //On vérifie comme tout à l'heure et on affiche le message correspondant
+		    //On vérifie la limite sinon crash avec != null
+		    
 		}
 		//A partir d'ici l'input est valide
 		System.out.format("%s%n", "Créneau validé !");
-		System.out.format("Votre créneau est le %s de %s à %s%n",
+		System.out.format("Lcréneau recherché est le %s de %s à %s%n",
 			getJourString(dt), //Pour afficher le jour en texte
 			//On affiche les créneaux
 			calculerCreneau(input),
@@ -264,7 +267,7 @@ public class Etablissement {
     }
     
     //planifier() juste la partie Client
-    public Client planifierClient(){
+    private Client planifierClient(){
 	String nom, numeroTelephone;
 	System.out.format("%s%n", "Rentrez votre nom :");
 	nom = sc.nextLine();
@@ -276,7 +279,7 @@ public class Etablissement {
 	    ajouter(nom, numeroTelephone);
     }
     
-    public LocalDateTime planifierCreneau(){
+    private LocalDateTime planifierCreneau(){
 	//Pour boucler si l'input n'est pas bon
 	int inputInt = -1;
 	//Pour récupérer la date ou l'heure
@@ -340,7 +343,7 @@ public class Etablissement {
 	return dt;
     }
     
-    public Prestation.CategorieVehicule planifierCategorieVehicule(){
+    private Prestation.CategorieVehicule planifierCategorieVehicule(){
 	int input = -1;
 	Prestation.CategorieVehicule categorieVehicule = null;
 	while(input < 0 || input > 2){

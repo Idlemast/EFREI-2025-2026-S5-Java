@@ -172,7 +172,8 @@ public class Main {
 	System.out.format("%s%n%s%n%n", "On affiche tous les créneaux disponibles et on laisse l'utilisateur sélectionner", "Commentaires à décommenter pour essayer");
 	//Retirer le commentaire pour tester rechercher() avec une LocalDate
 	//Ici la LocalDate est fixée à +3 jours par rapport à aujourd'hui, libre de modifier
-	//etablissement1.rechercher(LocalDate.now().plusDays(3));
+	//etablissement1.rechercher(LocalDate.now().plusDays(3));;
+	//etablissement1.rechercher(LocalTime.of(13, 0));
         
 	//Retirer le commentaire pour tester rechercher() avec un LocalTime
 	//Ici le LocalTime est fixée à 18h (fermé), libre de modifier
@@ -196,10 +197,11 @@ public class Main {
 
 	
 	
-//	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
-//	//Retirer le commentaire pour lancer la fonction
-//	//Attention : l'établissement 1 à 3 clients maximum (déjà atteint) donc à changer (etablissememnt1)
-//	etablissement1.planifier();
+	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
+	System.out.format("%s%n", "Retirer le commentaire pour lancer la fonction");
+//	//Attention : l'établissement 1 à 3 clients maximum (déjà atteint) donc on va créer un nouveau
+	Etablissement etablissement100 = new Etablissement("EFREI 100", 100);
+//	etablissement100.planifier();
 //          
         System.out.println(line2);
 	System.out.format(line + "PARTIE 2 [02] Classe Etablissement, afficher : String%n%n");
@@ -221,13 +223,12 @@ public class Main {
 	
 
 	etablissement1.versFichierClients();
-	Etablissement etablissement2 = new Etablissement("EFREI 2", 3);
-	etablissement2.depuisFichierClient();
-	System.out.format(etablissement2.printClients());
+	etablissement100.depuisFichierClient();
+	System.out.format(etablissement100.printClients());
 	etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), etablissement1.getDateTimeJour(DayOfWeek.FRIDAY).withHour(12).withMinute(0), PrestationTresSale.CategorieVehicule.B, PrestationTresSale.TypeSalissure._3);
 	etablissement1.versFichierRDV();
-	etablissement2.depuisFichierRDV();
-	System.out.format(etablissement2.printPlanning());
+	etablissement100.depuisFichierRDV();
+	System.out.format(etablissement100.printPlanning());
 	Etablissement etablissementTest = new Etablissement("Etablissement Test", 100);
 	etablissementTest.depuisFichierClient();
 	etablissementTest.depuisFichierRDV();
