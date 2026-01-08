@@ -1,5 +1,3 @@
-
-
 /**
  *
  *  GRP : William WAN & Hsiao-Wen-Paul LO
@@ -58,8 +56,8 @@ public abstract class Prestation {
 	return prix;
     }
     
-    protected double nettoyage() {
-        return lavage() + sechage();
+    protected double nettoyage(){
+	return prelavage() + lavage() + sechage();
     }
     
     protected double nettoyageInterieur() {

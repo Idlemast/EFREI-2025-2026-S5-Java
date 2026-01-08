@@ -1,5 +1,3 @@
-
-
 /**
  *
  *  GRP : William WAN & Hsiao-Wen-Paul LO
@@ -15,6 +13,7 @@ public class Client {
     
     //Pour Client, le numeroClient est spécifié par la classe
     public Client(int numeroClient, String nom, String numeroTelephone){
+	countNumerosClients++;
 	this.numeroClient = numeroClient;
 	this.nom = nom;
 	this.numeroTelephone = numeroTelephone;
@@ -26,7 +25,7 @@ public class Client {
     }
     
     public boolean placerApres(Client client){
-	return this.nom.compareToIgnoreCase(client.getNom()) > 0;
+	return this.nom.compareToIgnoreCase(client.getNom()) > 0 ? true : false;
     };
     
     public String versFichier(){

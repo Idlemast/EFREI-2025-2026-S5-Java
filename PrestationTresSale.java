@@ -1,4 +1,3 @@
-
 /**
  *
  *  GRP : William WAN & Hsiao-Wen-Paul LO
@@ -11,8 +10,8 @@ public class PrestationTresSale extends Prestation {
         _1("Tâches de nourriture"),
         _2("Tâches de boue"),
         _3("Tâches de transpiration"),
-	_4("Tâches de graisse"),
-        _5("Tâches de moisissure");
+	_4("Tâches de graisse");
+
         private final String label;
 
         TypeSalissure(String label) { this.label = label; }
@@ -30,12 +29,11 @@ public class PrestationTresSale extends Prestation {
     
     private double surcout() {
         switch (typeSalissure) {
-            case _1: return 0.99;
-            case _2: return 1.99;
-            case _3: return 2.99;
-            case _4: return 1.99;
-            case _5: return 2.99;
-            default: return 4;
+            case _1: return 5.0;
+            case _2: return 3.0;
+            case _3: return 4.0;
+            case _4: return 8.0;
+            default: return 2.0;
         }
     }
     
