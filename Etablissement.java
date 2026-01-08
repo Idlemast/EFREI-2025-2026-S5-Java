@@ -318,7 +318,7 @@ public class Etablissement {
 		    System.out.format("%s %s%n", getErrorString(e), "n'est pas une valeur valide");
 		}
 	    }
-	    System.out.format("%n");
+	    System.out.format("%n"); 
 	    dt = rechercher(dt.toLocalDate());
 	} else {
 	    System.out.println(verifierTime(dt.toLocalTime()));
