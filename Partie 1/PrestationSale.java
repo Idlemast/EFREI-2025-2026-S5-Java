@@ -1,3 +1,4 @@
+
 /**
  *
  *  GRP : William WAN & Hsiao-Wen-Paul LO
@@ -8,12 +9,13 @@ public class PrestationSale extends Prestation {
 	super(categorieVehicule);
     }
     
-    //Il faut ajouter le coût du produit, on a pas le choix
+    // Prélavage et nettoyage intérieur obligatoires
     //Contrairement à PrestationExpress
     @Override
     protected double nettoyage(){
-	return super.nettoyage() + nettoyageInterieur();
+        return prelavage() + super.nettoyage() + nettoyageInterieur();
     }
+
     
     
     @Override
@@ -24,7 +26,7 @@ public class PrestationSale extends Prestation {
     @Override
     public String toString(){
 	String str = super.toString();
-	str += String.format("%s%n%n", "Besoin de nettoyage");
+	str += String.format("%s%n%n", "Prestation véhicule sale");
 	return str;
     }
 }
