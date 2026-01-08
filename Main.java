@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -10,19 +9,29 @@ import java.util.Scanner;
  *
  *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
+
+
 public class Main {
     
     public static void main(String[] args) {
-	String line = String.format("#".repeat(30) + "%n");
-	
-	System.out.format(line + "PARTIE 1 [1a] Classe Client%n%n");
+        String line = String.format(" ".repeat(70));
+	String line2 = String.format("%n"+"=".repeat(170)+"%n"+"=".repeat(170)+"%n");
+        String line3 = String.format("#".repeat(120)+"%n");
+        
+	System.out.println(line2);
+	System.out.format(line+"PARTIE 1 [1a] Classe Client");
+        System.out.println(line2);
+        
 	System.out.format("%s%n%n", "On va créer 2 clients, un sans email et l'autre avec");
 	Client client1 = new Client(Client.countNumerosClients++, "William", "06 66 66 66 66");
 	Client client2 = new Client(Client.countNumerosClients++, "Paul", "06 22 22 22 22", "hsiao-wen-paul.lo@efrei.net");
 	System.out.format("%s%n%n%s", "Sans email : ", client1);
 	System.out.format("%s%n%n%s", "Avec email : ", client2);
 	
-	System.out.format(line + "PARTIE 1 [1b] Classe Prestation%n%n");
+        System.out.println(line2);
+	System.out.format(line+ "PARTIE 1 [1b] Classe Prestation");
+        System.out.println(line2);
+        
 	System.out.format("%s%n%n", "On va créer des prestations de toute sorte");
 	PrestationExpress prestationExpress1 = new PrestationExpress(Prestation.CategorieVehicule.A, true);
 	PrestationExpress prestationExpress2 = new PrestationExpress(Prestation.CategorieVehicule.C, false);
@@ -35,30 +44,64 @@ public class Main {
 	System.out.format("%s%n%n%s", "Prestation Véhicule très sale (Salissure 1) :", prestationTresSale1);
 	System.out.format("%s%n%n%s", "Prestation Véhicule très sale (Salissure 2) :", prestationTresSale2);
 	
-	System.out.format(line + "PARTIE 1 [1c] Classe RendezVous%n%n");
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [1c] Classe RendezVous");
+        System.out.println(line2);
 	System.out.format("%s%n%n", "On va créer des quelques rendez-vosu et les afficher");
 	RendezVous rendezVous1 = new RendezVous(client1, prestationExpress1, 99);
 	RendezVous rendezVous2 = new RendezVous(client2, prestationSale1, 110);
 	System.out.format("%s%n%n%s", "Rendez-vous 1 : ", rendezVous1);
 	System.out.format("%s%n%n%s", "Rendez-vous 2 : ", rendezVous2);
 	
-	System.out.format(line + "PARTIE 1 [02] Classe Etablissement%n%n");
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [02] Classe Etablissement");
+        System.out.println(line2);
+        
 	System.out.format("%s%n%n", "On va créer un établissement et les afficher");
 	Etablissement etablissement1 = new Etablissement("EFREI", 3);
 	System.out.format("%s%n%n%s", "Etablissement 1 (3 client max) : ", etablissement1);
-	
-	System.out.format(line + "PARTIE 1 [3a] Classe Etablissement, rechercher() : Client%n%n");
+        
+	System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [3a] Classe Etablissement, rechercher() : Client");
+        System.out.println(line2);
+        
 	System.out.format("On va rechercher un client (devrait retourner null puisqu'il n'y pas encore ajouter()) : %n");
 	System.out.format("%s%s%n%n", "Recherche de Giorno Giovanna : ", etablissement1.rechercher("Giorno Giovanna", "07 77 77 77 77"));
 	
-	System.out.format(line + "PARTIE 1 [3b] Classe Client, placerApres() : boolean%n%n");
+        // test plus tard avec la fonction ajouter() qu'on a fait en bas 
+        System.out.format("%s%n", "Maintenant on ajoute Jotaro Kujo dans l'établissement");
+        etablissement1.ajouter("Jotaro Kujo", "08 77 77 77 77");
+
+        System.out.format("%s%n", "Test 1 : Rechercher Jotaro Kujo ");
+        System.out.format("%s%s%n%n", "Recherche de Jotaro Kujo : ", etablissement1.rechercher("Jotaro Kujo", "08 77 77 77 77"));
+
+        System.out.format("%s%n", "Test 2 : Rechercher Jotara Kujo ");
+        System.out.format("%s%s%n%n", "Recherche de Jotara Kujo : ", etablissement1.rechercher("Jotara Kujo", "08 77 77 77 77"));
+
+        System.out.format("%s%n", "Test 3 : Rechercher Jotaro Kujo mais avec un mauvais numéro de téléphone");
+        System.out.format("%s%s%n%n", "Recherche de Jotaro Kujo : ", etablissement1.rechercher("Jotaro Kujo", "08 66 66 66 66"));
+        
+        System.out.format("%s%n", "Test 4 : Rechercher Jotaro Kujo mais en minuscule");
+        System.out.format("%s%s%n%n", "Recherche de Jotaro Kujo : ", etablissement1.rechercher("jotaro kujo", "08 77 77 77 77"));
+ 
+        System.out.format("Test 5 : Rechercher le client n°2 (devrait exister) | Résultat : %s%n", etablissement1.rechercher(2));
+
+        System.out.format("Test 6 : Rechercher le client n°999 (n'existe pas) | Résultat : %s%n", etablissement1.rechercher(999));
+        
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [3b] Classe Client, placerApres() : boolean");
+        System.out.println(line2);
+        
 	System.out.format("Trier 2 clients sur le nom pour voir qui est plus loin dans l'alphabet : %n");
 	System.out.format("(si les 2 ont la même valeur, renvoie aussi false)%n%n");
 	System.out.format("%s vs %s%n", client1.getNom(), client2.getNom());
 	System.out.format("Est-ce que %s doit être placé après %s : %s%n", client1.getNom(), client2.getNom(), client1.placerApres(client2));
 	System.out.format("Est-ce que %s doit être placé après %s : %s%n%n", client2.getNom(), client1.getNom(), client2.placerApres(client1));
 	
-	System.out.format(line + "PARTIE 1 [3c] Classe Client, ajouter() : Client%n%n");
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [3c] Classe Client, ajouter() : Client");
+        System.out.println(line2);
+        
 	System.out.format("Ajouter un Client dans Etablissement, mais est-il dejà instantié ? %n");
 	System.out.format("On suppose que non, et que c'est Etablissement qui va créer les clients%n");
 	System.out.format("On va ajouter un client Giorno Giovanna : %n%n");
@@ -74,37 +117,93 @@ public class Main {
 	System.out.format(etablissement1.printClients());
 	System.out.format("Ajout du client 4/3 (normalement null) : %s%n%n", etablissement1.ajouter("Narancia Ghirga", "07 55 55 55 55"));
 	
-	System.out.format(line + "PARTIE 1 [4a] Classe Prestation, prelavage(), lavage(), sechage(), nettoyage() : double%n%n");
-	System.out.format("Calculs des prestations selon la catégorie du véhicule et le type de prestation %n");
-	System.out.format("Prestation Express avec lavage d'un véhicule catégorie A (=65) : %s%n", prestationExpress1.nettoyage());
-	System.out.format("Prestation d'un véhicule sale de catégorie A (=65) : %s%n", prestationSale1.nettoyage());
-	System.out.format("Prestation d'un véhicule très sale de catégorie B (=78) : %s%n", prestationTresSale1.nettoyage());
-	System.out.format("Prestation d'un véhicule très sale de catégorie C (=94,75) : %s%n%n", prestationTresSale2.nettoyage());
-	
-	System.out.format(line + "PARTIE 1 [4b] Classe Etablissement, rechercher() : LocalDateTime%n%n");
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [4a] Classe Prestation, prelavage(), lavage(), sechage(), nettoyage() : double");
+        System.out.println(line2);
+        
+        System.out.format("Calculs des prestations selon la catégorie du véhicule et le type de prestation%n%n");
+
+        // PRESTATION EXPRESS
+        PrestationExpress prestaExpress1 = new PrestationExpress(Prestation.CategorieVehicule.A, false);
+        PrestationExpress prestaExpress2 = new PrestationExpress(Prestation.CategorieVehicule.B, true);
+
+        System.out.format("Prestation Express sans nettoyage — véhicule catégorie A (=30€) : %.2f€%n",
+                prestaExpress1.nettoyage());
+
+        System.out.format("Prestation Express avec nettoyage — véhicule catégorie B (=70.5€) : %.2f€%n",
+                prestaExpress2.nettoyage());
+
+
+        // PRESTATION SALE
+        PrestationSale prestaSale1 = new PrestationSale(Prestation.CategorieVehicule.A);
+        PrestationSale prestaSale2 = new PrestationSale(Prestation.CategorieVehicule.B);
+
+        System.out.format("Prestation d'un véhicule sale — catégorie A (=65€) : %.2f€%n",
+                prestaSale1.nettoyage());
+
+        System.out.format("Prestation d'un véhicule sale — catégorie B (=78€) : %.2f€%n",
+                prestaSale2.nettoyage());
+
+
+        // PRESTATION TRÈS SALE 
+        PrestationTresSale prestaTresSale1 = new PrestationTresSale(
+                Prestation.CategorieVehicule.A, PrestationTresSale.TypeSalissure._1);
+        PrestationTresSale prestaTresSale2 = new PrestationTresSale(
+                Prestation.CategorieVehicule.A, PrestationTresSale.TypeSalissure._2);
+
+        PrestationTresSale prestaTresSale3 = new PrestationTresSale(
+                Prestation.CategorieVehicule.B, PrestationTresSale.TypeSalissure._1);
+
+        System.out.format("Prestation d'un véhicule très sale — catégorie A, salissure 1 (=66.98€) : %.2f€%n",
+                prestaTresSale1.nettoyage());
+
+        System.out.format("Prestation d'un véhicule très sale — catégorie A, salissure 2 (=68.98€) : %.2f€%n%n",
+                prestaTresSale2.nettoyage());
+
+        System.out.format("Prestation d'un véhicule très sale — catégorie B, salissure 1 (=79.98€) : %.2f€%n",
+                prestaTresSale3.nettoyage());
+
+
+        
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [4b] Classe Etablissement, rechercher() : LocalDateTime");
+        System.out.println(line2);
+        
 	System.out.format("%s%n%s%n%n", "On affiche tous les créneaux disponibles et on laisse l'utilisateur sélectionner", "Commentaires à décommenter pour essayer");
 	//Retirer le commentaire pour tester rechercher() avec une LocalDate
 	//Ici la LocalDate est fixée à +3 jours par rapport à aujourd'hui, libre de modifier
 	//etablissement1.rechercher(LocalDate.now().plusDays(3));
+        
 	//Retirer le commentaire pour tester rechercher() avec un LocalTime
 	//Ici le LocalTime est fixée à 18h (fermé), libre de modifier
 	etablissement1.rechercher(LocalTime.of(18, 0));
-	
-	System.out.format(line + "PARTIE 1 [4c] Classe Etablissement, ajouter() : RendezVous%n%n");
+	// test lundi ( fermé ) 
+        LocalDate prochainLundi = etablissement1.getDateTimeJour(DayOfWeek.MONDAY).toLocalDate();
+        etablissement1.rechercher(prochainLundi);
+        // test + de 7 prochains jours 
+        etablissement1.rechercher(LocalDate.now().plusDays(20));
+        
+        System.out.println(line2);
+	System.out.format(line + "PARTIE 1 [4c] Classe Etablissement, ajouter() : RendezVous");
+        System.out.println(line2);
+        
 	System.out.format("%s", etablissement1.printPlanning());
 	System.out.format("%s%n%s%n%n", "Pour l'instant il n'y a aucun rendez-vous ajouté au planning, donc ajoutons un rendez-vous", "Ajoutons un créneau dans le vendredi à 10h :");
 	etablissement1.ajouter(client1, etablissement1.getDateTimeJour(DayOfWeek.FRIDAY).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s%n%s%n%n", "L'établissement est complet donc cela n'est pris en compte", "Mais si nous prenons Giorno Giovanna qui lui est dans la liste des clients");
 	RendezVous rendezVous3 = etablissement1.ajouter(etablissement1.rechercher(client3.getNom(), client3.getNumeroTelephone()), etablissement1.getDateTimeJour(DayOfWeek.FRIDAY).withHour(10).withMinute(0), PrestationExpress.CategorieVehicule.A, true);
 	System.out.format("%s", etablissement1.printPlanning());
+
 	
 	
 //	System.out.format(line + "PARTIE 2 [01] Classe Etablissement, planifier : void%n%n");
 //	//Retirer le commentaire pour lancer la fonction
 //	//Attention : l'établissement 1 à 3 clients maximum (déjà atteint) donc à changer (etablissememnt1)
 //	etablissement1.planifier();
-//
+//          
+        System.out.println(line2);
 	System.out.format(line + "PARTIE 2 [02] Classe Etablissement, afficher : String%n%n");
+        System.out.println(line2);
 	System.out.format("%s%n%s%n%n", "On va d'abord tester l'affichage des rendez-vous sur un jour donné", "Lundi étant fermé, il affiche que c'est fermé");
 	System.out.format(etablissement1.afficher(DayOfWeek.MONDAY));
 	System.out.format(etablissement1.afficher(DayOfWeek.FRIDAY));
