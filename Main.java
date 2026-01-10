@@ -233,38 +233,274 @@ public class Main {
 	etablissementTest.depuisFichierClient();
 	etablissementTest.depuisFichierRDV();
 //	etablissementTest.planifier();
-//    } 
-//   
-//    public void menu(){
-//	Scanner sc = new Scanner(System.in);
-//	int exit = -1;
-//	Etablissement etablissement3 = new Etablissement("EFREI 3", 5);
-//	etablissement3.depuisFichierClient();
-//	etablissement3.depuisFichierRDV();
-//	while(exit != 8){
-//	    exit = -1;
-//	    if(exit < 0 || exit > 8){
-//		System.out.format("%s%n", "Que voulez vous faire ?");
-//		System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%n",
-//			"[0] Rechercher un client",
-//			"[1] Ajouter un client",
-//			"[2] Rechercher un créneau par jour",
-//			"[3] Rechercher un créneau par heure",
-//			"[4] Planifier un rendez-vous",
-//			"[5] Afficher le planning sur un jour donné",
-//			"[6] Afficher selon le nom ou le numéro de téléphone",
-//			"[7] Afficher les rendez-vous selon le numéro client",
-//			"[8] Quitter le programme");
-//		try {
-//		    exit = Integer.parseInt(sc.nextLine());
-//		} catch(NumberFormatException e) {
-//		    exit = -1;
-//		}
-//		if(exit < 0 || exit > 8) System.out.format("%s%n", "La valeur n'est pas valide");
-//		switch(exit){
-//		    
-//		}
-//	    }
-//	}
+	menu();
+    } 
+   
+    public static void menu(){
+	Scanner sc = new Scanner(System.in);
+	Etablissement etab = new Etablissement("Station-lavage", 1000);
+	etab.depuisFichierClient();
+	etab.depuisFichierRDV();
+	Client c = null;
+	LocalDateTime dt = null;
+	int input;
+	boolean exit = false;
+	while(exit != true){
+	    input = -1;
+	    while(input < 0 || input > 8){
+		System.out.format("%s%n", "Que voulez vous faire ?");
+		if(c != null) System.out.format("%s%n", "Dernière recherche client : " + c.getNom());
+		if(dt != null) System.out.format("%s%n", "Dernière créneau : " + dt);
+		System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n",
+			"[0] Rechercher un client",
+			"[1] Ajouter un client",
+			"[2] Rechercher un créneau par jour",
+			"[3] Rechercher un créneau par heure",
+			"[4] Planifier un rendez-vous",
+			"[5] Afficher le planning sur un jour donné",
+			"[6] Afficher selon le nom ou le numéro de téléphone",
+			"[7] Afficher les rendez-vous selon le numéro client",
+			"[8] Quitter le programme");
+		try {
+		    input = Integer.parseInt(sc.nextLine());
+		    if(input < 0 || input > 8){
+			System.out.format("%s%n", "La valeur " + exit + " n'est pas valide");
+		    }
+		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
+	    }
+	    switch(input){
+		case 0 -> {
+		    //rechercher() - nom + téléphone
+		    c = menuRechercherClient(etab);
+		}
+		case 1 -> {
+		    //ajouter() : Client - nom, telephone
+		    c = menuAjouterClient(etab, c);
+		}
+		case 2 -> {
+		    //Rechercher un créneau par jour
+		    dt = menuRechercherCreneauDate(etab);
+		}
+		case 3 -> {
+		    //Rechercher un créneau par heure
+		    dt = menuRechercherCreneauHeure(etab);
+		}
+		case 4 -> {
+		    //Planifier un rendez-vous
+		    menuPlanifier(etab, c, dt);
+		    dt = null;
+		}
+		case 5 -> {
+		    //Afficher le planning sur un jour donné
+		    menuAfficherPlanning(etab);
+		}
+		case 6 -> {
+		    //Afficher selon le nom ou le numéro de téléphone
+		    menuAfficherClient(etab);
+		}
+		case 7 -> {
+		    //Afficher les rendez-vous selon le numéro client
+		    menuAfficherRendezVous(etab, c);
+		}
+		default -> {
+		    //Fin du programme
+		    exit = true;
+		    etab.versFichierClients();
+		    etab.versFichierRDV();
+		}
+	    }
+	}
+    }
+    
+    public static Client menuRechercherClient(Etablissement e){
+	Scanner sc = new Scanner(System.in);
+	String nom, numeroTelephone;
+	System.out.format("%s%n", "Donnez un nom :");
+	nom = sc.nextLine();
+	System.out.format("%s%n", "Donnez un numéro de téléphone :");
+	numeroTelephone = sc.nextLine();
+	System.out.format("%s%n", e.rechercher(nom, numeroTelephone) != null ?
+	    //S'il trouve
+	    e.rechercher(nom, numeroTelephone) :
+	    //S'il ne trouve pas
+	    "Il n'y a pas de client pour ce nom et numéro de téléphone"
+	);
+	return e.rechercher(nom, numeroTelephone);
+    }
+    
+    public static Client menuAjouterClient(Etablissement etab, Client c){
+	Scanner sc = new Scanner(System.in);
+	if(c != null){
+	    int value = -1;
+	    while(value < 0 || value > 1){
+		System.out.format("%s%n%s%n%s%n", "Votre dernière interaction client concernait " + c.getNom() + ", voulez-vous l'ajouter ? ", "[0] Oui", "[1] Non");
+		try {
+		    value = Integer.parseInt(sc.nextLine());
+		    if(value < 0 || value > 1){
+			System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
+		    }
+		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
+	    }
+	    if(value == 0){
+		if(etab.getNombreClients() >= 0 && etab.getNombreClients() < etab.getLimiteClients()){
+		    if(c.getEmail() != null) return etab.ajouter(c.getNom(), c.getNumeroTelephone(), c.getEmail());
+		    else if(c.getEmail() != null) return etab.ajouter(c.getNom(), c.getNumeroTelephone());
+		} else {
+		    System.out.format("%s%n", "Le client ne peut pas être ajouté, il,n'y a plus de place");
+		    return null;
+		}
+	    }
+	}
+	String nom, numeroTelephone, email;
+	System.out.format("%s%n", "Donnez un nom :");
+	nom = sc.nextLine();
+	System.out.format("%s%n", "Donnez un numéro de téléphone :");
+	numeroTelephone = sc.nextLine();
+	System.out.format("%s%n", "Si le client a un email, tapez-le, sinon répondez non :");
+	email = sc.nextLine();
+	if(etab.getNombreClients() >= 0 && etab.getNombreClients() < etab.getLimiteClients()){
+	    if(email.equalsIgnoreCase("non")){
+		return etab.ajouter(nom, numeroTelephone);
+	    } else {
+		return etab.ajouter(nom, numeroTelephone, email);
+	    }
+	} else {
+	    System.out.format("%s%n", "Le client ne peut pas être ajouté, il,n'y a plus de place");
+	    return null;
+	}
+    }
+	
+    public static LocalDateTime menuRechercherCreneauDate(Etablissement etab){
+	Scanner sc = new Scanner(System.in);
+	LocalDateTime dt = etab.getDate().minusDays(1);
+	String value;
+	while(etab.verifierDate(dt.toLocalDate())){
+	    System.out.format("%s%n", "Veuillez entrer une date souhaitée dans le format suivant YYYY-MM-DD et sur les 7 jours qui suivent :");
+	    value = sc.nextLine();
+	    try {
+		//Année
+		dt = dt.withYear(Integer.parseInt(value.split("-")[0]))
+		    //Mois
+		    .withMonth(Integer.parseInt(value.split("-")[1]))
+		    //Jour
+		    .withDayOfMonth(Integer.parseInt(value.split("-")[2]));
+		if(etab.verifierDate(dt.toLocalDate())) System.out.format("%s%n", dt.toLocalDate() + " n'est pas une date valide");
+	    } catch(NumberFormatException e){
+		//Pour éviter l'erreur
+		System.out.format("%s%n", etab.getErrorString(e) + " n'est pas une valeur valide");
+	    }
+	}
+	dt = etab.rechercher(dt.toLocalDate());
+	return dt;
+    }
+    
+    public static LocalDateTime menuRechercherCreneauHeure(Etablissement etab){
+	Scanner sc = new Scanner(System.in);
+	LocalDateTime dt = etab.getDate().minusMinutes(1);
+	String value;
+	while(etab.verifierTime(dt.toLocalTime())){
+	    System.out.format("%n%s","Veuillez entrer une heure souhaitée dans le format suivant HH:MM :");
+	    value = sc.nextLine();
+	    try {
+		//Heure
+		dt = dt.withHour(Integer.parseInt(value.split(":")[0]))
+		    //Minute
+		    .withMinute(Integer.parseInt(value.split(":")[1]));
+		if(etab.verifierTime(dt.toLocalTime())) System.out.format("%s%n", dt.toLocalTime() + " n'est pas une heure valide");
+	    } catch(NumberFormatException e){
+		System.out.format("%s%n", etab.getErrorString(e) + " n'est pas une valeur valide");
+	    }
+	}
+	dt = etab.rechercher(dt.toLocalDate());
+	return dt;
+    }
+    
+    public static void menuPlanifier(Etablissement etab, Client c, LocalDateTime dt){
+	Scanner sc = new Scanner(System.in);
+	int value = -1;
+	while((value < 0 || value > 1) || (c != null || dt != null)){
+	    if(c != null || dt != null)
+		System.out.format("%s%n", (c != null && dt != null) ?
+		"Vous avez actuellement un client (" + c.getNom() + ") et un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?" :
+		(c != null && dt == null) ? "Vous avez actuellement un client (" + c.getNom() + "), voulez-vous utiliser ces paramètres pour la planification ?" :
+		"Vous avez actuellement un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?"
+	    );
+	    try {
+		value = Integer.parseInt(sc.nextLine());
+		if(value < 0 || value > 1){
+		    System.out.format("%s%n", "La valeur " + value + " n'est pas un choix valide");
+		}
+	    } catch(NumberFormatException e) { System.out.format("%s%n", e + " n'est pas une valeur valide"); }
+	}
+	if(value == 0){
+	    System.out.format("%s%n", "Nous allons donc utiliser le client et le créneau pour faire le rendez-vous");
+	    etab.planifier(c, dt);
+	} else { System.out.format("%s%n", "Nous allons partir de 0 pour ce rendez-vous");
+	    if(c != null){
+		etab.planifier();
+	    }
+	}
+    }
+    
+    public static void menuAfficherPlanning(Etablissement etab){
+	Scanner sc = new Scanner(System.in);
+	int value = -1;
+	while(value < 1 || value > 7){
+	    System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n", "Choisissez un jour :",
+		"[1] Lundi (fermé)",
+		"[2] Mardi",
+		"[3] Mercredi",
+		"[4] Jeudi",
+		"[5] Vendredi",
+		"[6] Samedi",
+		"[7] Dimanche"
+	    );
+	    try {
+		value = Integer.parseInt(sc.nextLine());
+		if(value < 1 || value > 7){
+		    System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
+		}
+	    } catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
+	}
+	//La valeur est valide
+	etab.afficher(DayOfWeek.of(value));
+    }
+    
+    public static void menuAfficherClient(Etablissement etab){
+	Scanner sc = new Scanner(System.in);
+	String nom, numeroTelephone;
+	System.out.format("%s%n", "Donnez un nom :");
+	nom = sc.nextLine();
+	System.out.format("%s%n", "Donnez un numéro de téléphone :");
+	numeroTelephone = sc.nextLine();
+	etab.afficher(nom, numeroTelephone);
+    }
+    
+    public static void menuAfficherRendezVous(Etablissement etab, Client c){
+	Scanner sc = new Scanner(System.in);
+	int value = -1;
+	if(c != null){
+	    while(value < 0 || value > 1){
+		System.out.format("%s%n%s%n%s%n", "Votre dernière interaction client concernait " + c.getNom() + ", voulez-vous voir les rendez-vous de ce client ? ", "[0] Oui", "[1] Non");
+		try {
+		    value = Integer.parseInt(sc.nextLine());
+		    if(value < 0 || value > 1){
+			System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
+		    }
+		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
+	    }
+	    if(value == 0) etab.afficher(c.getNumeroClient());
+	}
+	if(value != 0){
+	    value = -1;
+	    while(value < 0){
+		System.out.format("%s%n", "Entrez un numéro client :");
+		try {
+		    value = Integer.parseInt(sc.nextLine());
+		    if(value < 0) System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
+		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
+	    }
+	    etab.afficher(value);
+	}
     }
 }

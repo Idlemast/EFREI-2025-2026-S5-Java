@@ -73,19 +73,15 @@ public class Etablissement {
 
     //Pour éviter le doublon
     private Client ajouterCalc(Client c) {
-	//Si le client peut être ajouter
-	if (getNombreClients() >= 0 && getNombreClients() < limiteClients) {
-	    //On assigne à la dernière position
-	    clients[getNombreClients()] = c;
-	    //On swap i-1 et i si pas dans l'ordre
-	    for (int i = getNombreClients() - 1; i > 0 && clients[i - 1].placerApres(clients[i]); i--) {
-		Client tmp = clients[i];
-		clients[i] = clients[i - 1];
-		clients[i - 1] = tmp;
-	    }
-	    return c;
+	//On assigne à la dernière position
+	clients[getNombreClients()] = c;
+	//On swap i-1 et i si pas dans l'ordre
+	for (int i = getNombreClients() - 1; i > 0 && clients[i - 1].placerApres(clients[i]); i--) {
+	    Client tmp = clients[i];
+	    clients[i] = clients[i - 1];
+	    clients[i - 1] = tmp;
 	}
-	return null;
+	return c;
     }
     
     //Vu que les clients doivent être numérotés automatiquement
@@ -93,11 +89,17 @@ public class Etablissement {
     //On ne peut pas mettre un auto-increment sur Client
     //C'est pour ça qu'on le fait ici
     public Client ajouter(String nom, String numeroTelephone) {
-	return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone));
+	//Si le client peut être ajouté
+	if (getNombreClients() >= 0 && getNombreClients() < limiteClients) {
+	    return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone));
+	} else return null;
     }
-
+    
     public Client ajouter(String nom, String numeroTelephone, String email) {
-	return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone, email));
+	//Si le client peut être ajouté
+	if (getNombreClients() >= 0 && getNombreClients() < limiteClients) {
+	    return ajouterCalc(new Client(Client.countNumerosClients++, nom, numeroTelephone, email));
+	} else return null;
     }
     
     //Les 2 fonctions prenaient trop de place donc fusion
@@ -367,15 +369,15 @@ public class Etablissement {
 	return categorieVehicule;
     }
     
-    public void planifier(){
-	Client c = planifierClient();
+    public void planifierCalc(Client c, LocalDateTime dt){
+	if(c == null) c = planifierClient();
 	//Si le nombre de clients max est atteint et que le client n'est pas déjà dans la liste
 	if(c == null){
 	    System.out.format("%n%s%n%s%n%n",
 		"Le nombre maximum de clients pour cet établissement a été atteint",
 		"et le client n'est pas sur la liste, donc cela ne va pas être possible");
 	} else {
-	    LocalDateTime dt = planifierCreneau();
+	    if(dt == null) dt = planifierCreneau();
 	    Prestation.CategorieVehicule categorieVehicule = planifierCategorieVehicule();
 	    RendezVous rdv;
 	    int input = -1;
@@ -436,6 +438,16 @@ public class Etablissement {
 	    }
 	}
 	System.out.format("%n");
+    }
+    
+    //Il n'y a rien de planifié
+    void planifier(){
+	planifierCalc(null, null);
+    }
+    
+    //On connaît déjà le client et le créneau
+    void planifier(Client c, LocalDateTime dt){
+	planifierCalc(c, dt);
     }
     
     //NE PAS ENCORE EN COMPTE SI LE CLIENT N'EST PAS DANS LA LISTE CLIENT
@@ -640,7 +652,8 @@ public class Etablissement {
     
     //Si c'est un lundi ou que le jour ne correspond pas
     public boolean verifierDate(LocalDate date){
-	return estFerme(date) || //Si c'est un lundi
+	return date == null || //si c'est null
+	    estFerme(date) || //Si c'est un lundi
 	    date.isBefore(tomorrow.toLocalDate()) || //Si aujourd'hui ou plus tôt
 	    date.isAfter(tomorrow.toLocalDate().plusDays(nombreMaxJours)); //Si 8 jours après ou plus tard
     }
@@ -648,6 +661,7 @@ public class Etablissement {
     //Si <10h ou >17h30
     public boolean verifierTime(LocalTime time){
 	return
+	    time == null || //Si est null
 	    time.getHour() < tomorrow.getHour() || //Si <10h
 	    calculerCreneau(time) > nombreMaxCreneaux; //Si >17h30h
     }
@@ -783,4 +797,6 @@ public class Etablissement {
     
     //Si l'établissement se fait racheter
     public void setNom(String nom) { this.nom = nom; }
+    
+    public LocalDateTime getDate(){ return tomorrow; }
 }
