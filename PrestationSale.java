@@ -9,13 +9,11 @@ public class PrestationSale extends Prestation {
     }
     
     // Prélavage et nettoyage intérieur obligatoires
-    //Contrairement à PrestationExpress
+    // Contrairement à PrestationExpress
     @Override
     protected double nettoyage(){
         return prelavage() + super.nettoyage() + nettoyageInterieur();
     }
-
-    
     
     @Override
     public String versFichier(){

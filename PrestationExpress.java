@@ -5,6 +5,7 @@
 public class PrestationExpress extends Prestation {
     private boolean besoinNettoyage;
     
+    //On utilise super() + on ajoute le boolean
     public PrestationExpress(CategorieVehicule categorieVehicule, boolean besoinNettoyage){
 	super(categorieVehicule);
 	this.besoinNettoyage = besoinNettoyage;
@@ -16,6 +17,7 @@ public class PrestationExpress extends Prestation {
 	return besoinNettoyage ? super.nettoyage() + nettoyageInterieur() : super.nettoyage();
     }
     
+    //Au format demandé (" : ") pour mettre dans le fichier
     @Override
     public String versFichier(){
 	return String.format("%s : %s", categorieVehicule.name(), besoinNettoyage);
@@ -24,6 +26,7 @@ public class PrestationExpress extends Prestation {
     @Override
     public String toString(){
 	String str = super.toString();
+	//Change le texte à ajouter selon s'il y a besoin de nettoyage
 	str += String.format("%s%n%n", besoinNettoyage ? "Besoin de nettoyage" : "Pas besoin de nettoyage");
 	return str;
     }

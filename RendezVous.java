@@ -27,7 +27,9 @@ public class RendezVous {
 	return str;
     }
     
-    
+    //Au format demandé (" : ") pour mettre dans le fichier
+    //On prend le versFichier() de la prestation et on y ajoute le prix
+    //Le client n'est pas indiqué ici
     public String versFichier(){
 	return String.format("%s : %s%n", prestation.versFichier(), prix);
     }

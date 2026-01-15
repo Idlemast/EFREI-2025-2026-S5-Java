@@ -7,7 +7,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -18,11 +17,16 @@ import java.util.Scanner;
  *  GRP : William WAN & Hsiao-Wen-Paul LO
  */
 public class Etablissement {
+    //On met un Scanner toute toute les instances de la classe
+    //On évite ainsi les redites
     private static final Scanner sc = new Scanner(System.in);
+    //On créer un LocalDateTime qui va définir le premier créneau disponible
+    //c'est à dire normalement demain à 10h
     private static final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0).truncatedTo(MINUTES);
-
     private String nom;
     private final int limiteClients;
+    //On utilise calculCreneau() pour déterminer le nombre de créneau de manière automatique
+    //Ici l'heure limite est 18h donc 30 * 8 donc 16 
     private final int nombreMaxCreneaux = calculerCreneau(tomorrow.withHour(18).toLocalTime());
     private final int nombreMaxJours = 7;
     private final Client[] clients;
@@ -43,13 +47,14 @@ public class Etablissement {
 	if (getNombreClients() != 0) {
 	    //On ne fait pas for(Client client : clients) car il va boucler sur les null aussi
 	    for(int c = 0; c < getNombreClients(); c++) {
-		if(parNumeroClient){ //Si numeroClient
+		if(parNumeroClient){ //Si numeroClient pour la partie 2
 		    try {
 			if (clients[c].getNumeroClient() == Integer.parseInt(args)) {
 			    return clients[c];
 			}
 		    } catch(NumberFormatException e){ return null; } //retourne null s'il y a un problème
-		} else { //Si nom + numeroTelephone
+		} else {
+		    //Si nom + numeroTelephone
 		    //On vérifie les 2 conditions directement
 		    if (clients[c].getNom().equalsIgnoreCase(args.split(";")[0]) &&
 			    clients[c].getNumeroTelephone().equalsIgnoreCase(args.split(";")[1])) {
@@ -67,6 +72,8 @@ public class Etablissement {
 	return rechercherCalc(nom.concat(";").concat(numeroTelephone), false);
     }
     
+    //On convertit les arguments en 1 seul String pour tout passer dans la fonction de calcul
+    //Le boolean détermine si args est un numéro client ou pas, ici oui donc numeroClient
     public Client rechercher(int numeroClient) {
 	return rechercherCalc(Integer.toString(numeroClient), true);
     }
@@ -102,136 +109,250 @@ public class Etablissement {
 	} else return null;
     }
     
-    //Les 2 fonctions prenaient trop de place donc fusion
-    private LocalDateTime rechercherCalc(LocalDateTime dt, boolean isDate) {
-	//L'input est à -1 pour pouvoir boucler sur les index
-	int input = -1;
-	if (isDate) { //Si c'est une date
-	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", getJourString(dt));
-	    //Soit c'est fermé, soit la date donnée n'est pas dans les 7 prochains jours
-	    if (verifierDate(dt.toLocalDate())) { //On vérifie la date
-		System.out.format("%s%n%n", estFerme(dt.toLocalDate()) ?
-			"Pas de créneau le lundi" : //Si c'est un lundi
-			"Date non comprise dans les 7 prochains jours" //Si est différent de la semaine prochaine
-		);
-		return null;
-	    } else {
-		//On récupère l'index entre demain (0)
-		//et la date donnée pour utiliser plusDays
-		int j = getDeltaJours(dt.toLocalDate());
-		//Affichage des créneaux en heures
-		for (int c = 0; c < planning.length; c++) {
-		    System.out.format("[%-2s] %s à %s ",
-			    c, //L'index
-			    calculerCreneau(c),	//La date du début du créneau en String
-			    calculerCreneau(c + 1)  //La date de fin du créneau en String
-		    ); 
-		    //Est-ce que le créneau est déjà pris ?
-		    //On rajoute une petite mention si c'est déjà pris
-		    System.out.format(" %s%n", planning[c][j] != null ? "(Créneau déjà pris)" : "");
-		}
-		//Soit la valeur est hors limite (première fois à -1) soit le créneau est déjà pris
-		while (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
-		    System.out.format("%s%n", "Veuillez choisir votre créneau :");
-		    try {
-			input = Integer.parseInt(sc.nextLine());
-			if (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
-			System.out.format("%s%n", input < 0 || input > planning.length - 1 ?
-			    "Ce n'est pas dans la sélection" :
-			    "Le créneau est déjà pris"
-			);
-		    }
-		    } catch(NumberFormatException e){ System.out.format("%s%n", "Ce n'est pas une valeur valide"); }
-		    //On vérifie comme tout à l'heure et on affiche le message correspondant
-		    //On vérifie la limite sinon crash avec != null
-		    
-		}
-		//A partir d'ici l'input est valide
-		System.out.format("%s%n", "Créneau validé !");
-		System.out.format("Lcréneau recherché est le %s de %s à %s%n",
-			getJourString(dt), //Pour afficher le jour en texte
-			//On affiche les créneaux
-			calculerCreneau(input),
-			calculerCreneau(input + 1)
-		);
-		//On se sert de l'input pour générer un LocalTime
-		//calculerCreneau() renvoie soit selon l'argument :
-		//un int qui correspond au nombre de tranches de 30 minutes depuis 10h
-		//un LocalTime qui correspond au nombre à l'heure réel du rendez-vous
-		return calculerCreneau(input).atDate(dt.toLocalDate());
-	    }
-	} else { //Si c'est une heure
-	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", dt.toLocalTime());
-	    //Si avant 10h ou après 17h30 (dernier créneau), on retourne null
-	    if(dt.getHour() < tomorrow.getHour() || calculerCreneau(dt.toLocalTime()) > planning.length - 1){
-		System.out.format("%s%n%n", "L'établissement est fermé à cette heure");
-		return null;
-	    }
-	    //On boucle directement sur les jours
-	    for (int j = 0; j < nombreMaxJours; j++) {
-		System.out.format("[%-1s] %s ", j, getJourString(dt.plusDays(j)));
-		//On vérifie si c'est un lundi et si c'est vide
-		System.out.format("%s%n",
-		    planning[calculerCreneau(dt.toLocalTime())][j] != null ? "(Déjà pris)" : //Si != null = déjà pris
-		    estFerme(tomorrow.toLocalDate().plusDays(j)) ? "(fermé)" : "" //Sinon si c'est fermé, sinon rien
-		);
-	    }
-	    while (input < 0 || input > nombreMaxJours - 1 || //Choisi une valeur correspondant à un jour
-		planning[calculerCreneau(dt.toLocalTime())][input] != null || 
-		estFerme(dt.toLocalDate().plusDays(input)) //Si c'est fermé
-	    ) {
-		System.out.format("Veuillez choisir votre créneau : %n");
-		try {
-		    input = Integer.parseInt(sc.nextLine());
-		    //Si rentre un nombre non indexé
-		    if (input < 0 || input > nombreMaxJours - 1 ||
-			//ou que le créneau est déjà pris
-			planning[calculerCreneau(dt.toLocalTime())][input] != null ||
-			//ou que c'est fermé
-			estFerme(dt.toLocalDate().plusDays(input))
-		    ) {
-			System.out.format("%s%n",
-			    //Si nombre non valide
-			    (input < 0 || input > nombreMaxJours - 1) ?
-				"Ce n'est pas un créneau valide" :
-				//Sinon si est fermé
-				estFerme(dt.plusDays(input).toLocalDate()) ?
-				    "L'établissement est fermé" :
-				    //Sinon le créneau est déjà pris
-				    "Le créneau est déjà pris"
-			);
-		    }
-		} catch(NumberFormatException e){
-		    System.out.format("%s%n", "Ce n'est pas un créneau valide");
-		}
-	    }
-	    //A partir d'ici l'input est valide
-	    System.out.format("%n%s%n", "Créneau validé !");
-	    System.out.format("Votre créneau est le %s de %s à %s%n%n",
-		getJourString(dt.plusDays(input)),
-		calculerCreneau(calculerCreneau(dt.toLocalTime())),
-		calculerCreneau(calculerCreneau(dt.toLocalTime()) + 1)
-	    );
-	    //retourne la date choisie
-	    //y ajoute un LocalTime calculé avec un int calculé avec un LocalTime
-	    //Pour éviter d'ajouter le temps manuellement
-	    return calculerCreneau( 
-		calculerCreneau(
-		    dt.toLocalTime())
-		).atDate(dt.toLocalDate().plusDays(input));
-	}
-    }
+//    //Les 2 fonctions prenaient trop de place donc fusion
+//    private LocalDateTime rechercherCalc(LocalDateTime dt, boolean isDate) {
+//	//L'input est à -1 pour pouvoir boucler sur les index
+//	int input = -1;
+//	if (isDate) { //Si c'est une date
+//	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", getJourString(dt));
+//	    //Soit c'est fermé, soit la date donnée n'est pas dans les 7 prochains jours
+//	    if (verifierDate(dt.toLocalDate())) { //On vérifie la date
+//		System.out.format("%s%n%n", estFerme(dt.toLocalDate()) ?
+//			"Pas de créneau le lundi" : //Si c'est un lundi
+//			"Date non comprise dans les 7 prochains jours" //Si est différent de la semaine prochaine
+//		);
+//		return null;
+//	    } else {
+//		//On récupère l'index entre demain (0)
+//		//et la date donnée pour utiliser plusDays
+//		int j = getDeltaJours(dt.toLocalDate());
+//		//Affichage des créneaux en heures
+//		for (int c = 0; c < planning.length; c++) {
+//		    System.out.format("[%-2s] %s à %s ",
+//			    c, //L'index
+//			    calculerCreneau(c),	//La date du début du créneau en String
+//			    calculerCreneau(c + 1)  //La date de fin du créneau en String
+//		    ); 
+//		    //Est-ce que le créneau est déjà pris ?
+//		    //On rajoute une petite mention si c'est déjà pris
+//		    System.out.format(" %s%n", planning[c][j] != null ? "(Créneau déjà pris)" : "");
+//		}
+//		//Soit la valeur est hors limite (première fois à -1) soit le créneau est déjà pris
+//		while (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
+//		    System.out.format("%s%n", "Veuillez choisir votre créneau :");
+//		    try {
+//			input = Integer.parseInt(sc.nextLine());
+//			if (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
+//			System.out.format("%s%n", input < 0 || input > planning.length - 1 ?
+//			    "Ce n'est pas dans la sélection" :
+//			    "Le créneau est déjà pris"
+//			);
+//		    }
+//		    } catch(NumberFormatException e){ System.out.format("%s%n", "Ce n'est pas une valeur valide"); }
+//		    //On vérifie comme tout à l'heure et on affiche le message correspondant
+//		    //On vérifie la limite sinon crash avec != null
+//		    
+//		}
+//		//A partir d'ici l'input est valide
+//		System.out.format("%s%n", "Créneau validé !");
+//		System.out.format("Lcréneau recherché est le %s de %s à %s%n",
+//			getJourString(dt), //Pour afficher le jour en texte
+//			//On affiche les créneaux
+//			calculerCreneau(input),
+//			calculerCreneau(input + 1)
+//		);
+//		//On se sert de l'input pour générer un LocalTime
+//		//calculerCreneau() renvoie soit selon l'argument :
+//		//un int qui correspond au nombre de tranches de 30 minutes depuis 10h
+//		//un LocalTime qui correspond au nombre à l'heure réel du rendez-vous
+//		return calculerCreneau(input).atDate(dt.toLocalDate());
+//	    }
+//	} else { //Si c'est une heure
+//	    System.out.format("[CRENEAUX DISPONIBLES : %s]%n", dt.toLocalTime());
+//	    //Si avant 10h ou après 17h30 (dernier créneau), on retourne null
+//	    if(dt.getHour() < tomorrow.getHour() || calculerCreneau(dt.toLocalTime()) > planning.length - 1){
+//		System.out.format("%s%n%n", "L'établissement est fermé à cette heure");
+//		return null;
+//	    }
+//	    //On boucle directement sur les jours
+//	    for (int j = 0; j < nombreMaxJours; j++) {
+//		System.out.format("[%-1s] %s ", j, getJourString(dt.plusDays(j)));
+//		//On vérifie si c'est un lundi et si c'est vide
+//		System.out.format("%s%n",
+//		    planning[calculerCreneau(dt.toLocalTime())][j] != null ? "(Déjà pris)" : //Si != null = déjà pris
+//		    estFerme(tomorrow.toLocalDate().plusDays(j)) ? "(fermé)" : "" //Sinon si c'est fermé, sinon rien
+//		);
+//	    }
+//	    while (input < 0 || input > nombreMaxJours - 1 || //Choisi une valeur correspondant à un jour
+//		planning[calculerCreneau(dt.toLocalTime())][input] != null || 
+//		estFerme(dt.toLocalDate().plusDays(input)) //Si c'est fermé
+//	    ) {
+//		System.out.format("Veuillez choisir votre créneau : %n");
+//		try {
+//		    input = Integer.parseInt(sc.nextLine());
+//		    //Si rentre un nombre non indexé
+//		    if (input < 0 || input > nombreMaxJours - 1 ||
+//			//ou que le créneau est déjà pris
+//			planning[calculerCreneau(dt.toLocalTime())][input] != null ||
+//			//ou que c'est fermé
+//			estFerme(dt.toLocalDate().plusDays(input))
+//		    ) {
+//			System.out.format("%s%n",
+//			    //Si nombre non valide
+//			    (input < 0 || input > nombreMaxJours - 1) ?
+//				"Ce n'est pas un créneau valide" :
+//				//Sinon si est fermé
+//				estFerme(dt.plusDays(input).toLocalDate()) ?
+//				    "L'établissement est fermé" :
+//				    //Sinon le créneau est déjà pris
+//				    "Le créneau est déjà pris"
+//			);
+//		    }
+//		} catch(NumberFormatException e){
+//		    System.out.format("%s%n", "Ce n'est pas un créneau valide");
+//		}
+//	    }
+//	    //A partir d'ici l'input est valide
+//	    System.out.format("%n%s%n", "Créneau validé !");
+//	    System.out.format("Votre créneau est le %s de %s à %s%n%n",
+//		getJourString(dt.plusDays(input)),
+//		calculerCreneau(calculerCreneau(dt.toLocalTime())),
+//		calculerCreneau(calculerCreneau(dt.toLocalTime()) + 1)
+//	    );
+//	    //retourne la date choisie
+//	    //y ajoute un LocalTime calculé avec un int calculé avec un LocalTime
+//	    //Pour éviter d'ajouter le temps manuellement
+//	    return calculerCreneau( 
+//		calculerCreneau(
+//		    dt.toLocalTime())
+//		).atDate(dt.toLocalDate().plusDays(input));
+//	}
+//    }
     
+    //
     public LocalDateTime rechercher(LocalDate date) {
 	//On met une heure qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherCalc(date.atTime(tomorrow.getHour(), 0), true);
+//	return rechercherCalc(date.atTime(tomorrow.getHour(), 0), true);
+	int input = -1;
+	System.out.format("[CRENEAUX DISPONIBLES : %s]%n", getJourString(date.atTime(0, 0)));
+	//Soit c'est fermé, soit la date donnée n'est pas dans les 7 prochains jours
+	if (verifierDate(date)) { //On vérifie la date
+	    System.out.format("%s%n%n", estFerme(date) ?
+		    "Pas de créneau le lundi" : //Si c'est un lundi
+		    "Date non comprise dans les 7 prochains jours" //Si est différent de la semaine prochaine
+	    );
+	    return null;
+	} else {
+	    //On récupère l'index entre demain (0)
+	    //et la date donnée pour utiliser plusDays
+	    int j = getDeltaJours(date);
+	    //Affichage des créneaux en heures
+	    for (int c = 0; c < planning.length; c++) {
+		System.out.format("[%-2s] %s à %s ",
+			c, //L'index
+			calculerCreneau(c),	//La date du début du créneau en String
+			calculerCreneau(c + 1)  //La date de fin du créneau en String
+		); 
+		//Est-ce que le créneau est déjà pris ?
+		//On rajoute une petite mention si c'est déjà pris
+		System.out.format(" %s%n", planning[c][j] != null ? "(Créneau déjà pris)" : "");
+	    }
+	    //Soit la valeur est hors limite (première fois à -1) soit le créneau est déjà pris
+	    while (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
+		System.out.format("%s%n", "Veuillez choisir votre créneau :");
+		try {
+		    input = Integer.parseInt(sc.nextLine());
+		    if (input < 0 || input > planning.length - 1 || planning[input][j] != null) {
+		    System.out.format("%s%n", input < 0 || input > planning.length - 1 ?
+			"Ce n'est pas dans la sélection" :
+			"Le créneau est déjà pris"
+		    );
+		}
+		} catch(NumberFormatException e){ System.out.format("%s%n", "Ce n'est pas une valeur valide"); }
+		//On vérifie comme tout à l'heure et on affiche le message correspondant
+		//On vérifie la limite sinon crash avec != null
+
+	    }
+	    //A partir d'ici l'input est valide
+	    System.out.format("%s%n", "Créneau validé !");
+	    System.out.format("Le créneau recherché est le %s de %s à %s%n",
+		    getJourString(date.atTime(0, 0)), //Pour afficher le jour en texte
+		    //On affiche les créneaux
+		    calculerCreneau(input),
+		    calculerCreneau(input + 1)
+	    );
+	    //On se sert de l'input pour générer un LocalTime
+	    //calculerCreneau() renvoie soit selon l'argument :
+	    //un int qui correspond au nombre de tranches de 30 minutes depuis 10h
+	    //un LocalTime qui correspond au nombre à l'heure réel du rendez-vous
+	    return calculerCreneau(input).atDate(date);
+	}
     }
 
     public LocalDateTime rechercher(LocalTime time) {
 	//On met une date qui ne servira pas
 	//Pour qu'il soit en LocalDateTime
-	return rechercherCalc(time.atDate(tomorrow.toLocalDate()), false);
+	//return rechercherCalc(time.atDate(tomorrow.toLocalDate()), false);
+	int input = -1;
+	System.out.format("[CRENEAUX DISPONIBLES : %s]%n", time);
+	//Si avant 10h ou après 17h30 (dernier créneau), on retourne null
+	if(time.getHour() < tomorrow.getHour() || calculerCreneau(time) > planning.length - 1){
+	    System.out.format("%s%n%n", "L'établissement est fermé à cette heure");
+	    return null;
+	}
+	//On boucle directement sur les jours
+	for (int j = 0; j < nombreMaxJours; j++) {
+	    System.out.format("[%-1s] %s ", j, getJourString(tomorrow.plusDays(j)));
+	    //On vérifie si c'est un lundi et si c'est vide
+	    System.out.format("%s%n",
+		planning[calculerCreneau(time)][j] != null ? "(Déjà pris)" : //Si != null = déjà pris
+		estFerme(tomorrow.toLocalDate().plusDays(j)) ? "(fermé)" : "" //Sinon si c'est fermé, sinon rien
+	    );
+	}
+	while (input < 0 || input > nombreMaxJours - 1 || //Choisi une valeur correspondant à un jour
+	    planning[calculerCreneau(time)][input] != null || 
+	    estFerme(tomorrow.toLocalDate().plusDays(input)) //Si c'est fermé
+	) {
+	    System.out.format("Veuillez choisir votre créneau : %n");
+	    try {
+		input = Integer.parseInt(sc.nextLine());
+		//Si rentre un nombre non indexé
+		if (input < 0 || input > nombreMaxJours - 1 ||
+		    //ou que le créneau est déjà pris
+		    planning[calculerCreneau(time)][input] != null ||
+		    //ou que c'est fermé
+		    estFerme(tomorrow.toLocalDate().plusDays(input))
+		) {
+		    System.out.format("%s%n",
+			//Si nombre non valide
+			(input < 0 || input > nombreMaxJours - 1) ?
+			    "Ce n'est pas un créneau valide" :
+			    //Sinon si est fermé
+			    estFerme(tomorrow.toLocalDate().plusDays(input)) ?
+				"L'établissement est fermé" :
+				//Sinon le créneau est déjà pris
+				"Le créneau est déjà pris"
+		    );
+		}
+	    } catch(NumberFormatException e){
+		System.out.format("%s%n", "Ce n'est pas un créneau valide");
+	    }
+	}
+	//A partir d'ici l'input est valide
+	System.out.format("%n%s%n", "Créneau validé !");
+	System.out.format("Votre créneau est le %s de %s à %s%n%n",
+	    getJourString(tomorrow.plusDays(input)),
+	    calculerCreneau(calculerCreneau(time)),
+	    calculerCreneau(calculerCreneau(time) + 1)
+	);
+	//retourne la date choisie
+	//y ajoute un LocalTime calculé avec un int calculé avec un LocalTime
+	//Pour éviter d'ajouter le temps manuellement
+	return calculerCreneau( 
+	    calculerCreneau(
+		time)
+	    ).atDate(tomorrow.toLocalDate().plusDays(input));
     }
 
     //Les 3 fonctions font la même chose donc on combine
