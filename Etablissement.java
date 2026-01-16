@@ -456,7 +456,7 @@ public class Etablissement {
 	str += String.format("Voici le planning du %s%n", getJourString(tomorrow.plusDays(index)));
 	//Si c'est fermé
 	if(estFerme(tomorrow.toLocalDate().plusDays(index))){
-	    str += String.format("%s%n%n", "L'établiseement est fermé le lundi");
+	    str += String.format("%s%n%n", "L'établissement est fermé le lundi");
 	    return str;
 	}
 	//Sinon on affiche chaque créneau
