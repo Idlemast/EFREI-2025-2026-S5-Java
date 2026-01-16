@@ -396,12 +396,9 @@ public class Main {
     public static void menuPlanifier(Etablissement etab, Client c, LocalDateTime dt){
 	Scanner sc = new Scanner(System.in);
 	int value = -1;
-	System.out.format("ok ");
 	//Propose de prendre le dernier client et/ou le dernier créneau
 	while((value < 0 || value > 1) && (c != null || dt != null)){
-	    System.out.format("ok2 ");
 	    if(c != null || dt != null){
-		System.out.format("ok3 ");
 		//affichage selon ce qu'il y a
 		System.out.format("%s%n",
 		    (c != null && dt != null) ?
