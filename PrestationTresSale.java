@@ -7,11 +7,11 @@ public class PrestationTresSale extends Prestation {
     //comme un sélecteur entre différents choix
     public static enum TypeSalissure {
 	//Sous la forme _numéro car permet de récupérer le numéro après
-        _1("Tâches de nourriture"),
-        _2("Tâches de boue"),
-        _3("Tâches de transpiration"),
-	_4("Tâches de graisse"),
-        _5("Tâches de moisissure");
+        _1("Taches de nourriture"),
+        _2("Taches de boue"),
+        _3("Taches de transpiration"),
+	_4("Taches de graisse"),
+        _5("Taches de moisissure");
         private final String label;
 
         TypeSalissure(String label) { this.label = label; }
