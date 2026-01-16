@@ -250,8 +250,8 @@ public class Main {
 	    input = -1;
 	    while(input < 0 || input > 8){
 		System.out.format("%s%n", "Que voulez vous faire ?");
-		if(c != null) System.out.format("%s%n", "Dernière recherche client : " + c.getNom());
-		if(dt != null) System.out.format("%s%n", "Dernièr créneau : " + dt);
+		if(c != null) System.out.format("%s%n", "Dernière interaction client : " + c.getNom());
+		if(dt != null) System.out.format("%s%n", "Dernier créneau : " + dt);
 		System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n",
 			"[0] Rechercher un client",
 			"[1] Ajouter un client",
@@ -276,7 +276,7 @@ public class Main {
 		}
 		case 1 -> {
 		    //ajouter() : Client - nom, telephone
-		    c = menuAjouterClient(etab, c);
+		    c = menuAjouterClient(etab);
 		}
 		case 2 -> {
 		    //Rechercher un créneau par jour
@@ -329,30 +329,8 @@ public class Main {
 	return e.rechercher(nom, numeroTelephone);
     }
     
-    public static Client menuAjouterClient(Etablissement etab, Client c){
+    public static Client menuAjouterClient(Etablissement etab){
 	Scanner sc = new Scanner(System.in);
-	if(c != null){
-	    int value = -1;
-	    //Demande si on reprend la dernière interaction client
-	    while(value < 0 || value > 1){
-		System.out.format("%s%n%s%n%s%n", "Votre dernière interaction client concernait " + c.getNom() + ", voulez-vous l'ajouter ? ", "[0] Oui", "[1] Non");
-		try {
-		    value = Integer.parseInt(sc.nextLine());
-		    if(value < 0 || value > 1){
-			System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
-		    }
-		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
-	    }
-	    if(value == 0){
-		if(etab.getNombreClients() >= 0 && etab.getNombreClients() < etab.getLimiteClients()){
-		    if(c.getEmail() != null) return etab.ajouter(c.getNom(), c.getNumeroTelephone(), c.getEmail());
-		    else if(c.getEmail() != null) return etab.ajouter(c.getNom(), c.getNumeroTelephone());
-		} else {
-		    System.out.format("%s%n", "Le client ne peut pas être ajouté, il,n'y a plus de place");
-		    return null;
-		}
-	    }
-	}
 	String nom, numeroTelephone, email;
 	System.out.format("%s%n", "Donnez un nom :");
 	nom = sc.nextLine();
