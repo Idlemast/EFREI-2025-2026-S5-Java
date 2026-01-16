@@ -512,7 +512,7 @@ public class Etablissement {
 	if(client != null){
 	    for (int c = 0; c < nombreMaxCreneaux; c++) {
 		for (int j = 0; j < nombreMaxJours; j++) {
-		    if(planning[c][j] != null){
+		    if(planning[c][j] != null && planning[c][j].getClient().getNumeroClient() == n){
 			nbRDV++;
 			str += planning[c][j];
 		    }
