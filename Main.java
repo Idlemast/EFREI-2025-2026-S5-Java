@@ -3,6 +3,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -250,7 +251,7 @@ public class Main {
 	    while(input < 0 || input > 8){
 		System.out.format("%s%n", "Que voulez vous faire ?");
 		if(c != null) System.out.format("%s%n", "Dernière recherche client : " + c.getNom());
-		if(dt != null) System.out.format("%s%n", "Dernière créneau : " + dt);
+		if(dt != null) System.out.format("%s%n", "Dernièr créneau : " + dt);
 		System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n",
 			"[0] Rechercher un client",
 			"[1] Ajouter un client",
@@ -332,6 +333,7 @@ public class Main {
 	Scanner sc = new Scanner(System.in);
 	if(c != null){
 	    int value = -1;
+	    //Demande si on reprend la dernière interaction client
 	    while(value < 0 || value > 1){
 		System.out.format("%s%n%s%n%s%n", "Votre dernière interaction client concernait " + c.getNom() + ", voulez-vous l'ajouter ? ", "[0] Oui", "[1] Non");
 		try {
@@ -372,58 +374,60 @@ public class Main {
 	
     public static LocalDateTime menuRechercherCreneauDate(Etablissement etab){
 	Scanner sc = new Scanner(System.in);
-	LocalDateTime dt = etab.getDate().minusDays(1);
+	LocalDate date = etab.getDate().minusDays(1);
 	String value;
-	while(etab.verifierDate(dt.toLocalDate())){
+	while(etab.verifierDate(date)){
 	    System.out.format("%s%n", "Veuillez entrer une date souhaitée dans le format suivant YYYY-MM-DD et sur les 7 jours qui suivent :");
 	    value = sc.nextLine();
 	    try {
 		//Année
-		dt = dt.withYear(Integer.parseInt(value.split("-")[0]))
+		date = date.withYear(Integer.parseInt(value.split("-")[0]))
 		    //Mois
 		    .withMonth(Integer.parseInt(value.split("-")[1]))
 		    //Jour
 		    .withDayOfMonth(Integer.parseInt(value.split("-")[2]));
-		if(etab.verifierDate(dt.toLocalDate())) System.out.format("%s%n", dt.toLocalDate() + " n'est pas une date valide");
+		if(etab.verifierDate(date)) System.out.format("%s%n", date + " n'est pas une date valide");
 	    } catch(NumberFormatException e){
 		//Pour éviter l'erreur
 		System.out.format("%s%n", etab.getErrorString(e) + " n'est pas une valeur valide");
 	    }
 	}
-	dt = etab.rechercher(dt.toLocalDate());
-	return dt;
+	return etab.rechercher(date);
     }
     
     public static LocalDateTime menuRechercherCreneauHeure(Etablissement etab){
 	Scanner sc = new Scanner(System.in);
-	LocalDateTime dt = etab.getDate().minusMinutes(1);
+	LocalTime time = null;
 	String value;
-	while(etab.verifierTime(dt.toLocalTime())){
+	while(etab.verifierTime(time)){
 	    System.out.format("%n%s","Veuillez entrer une heure souhaitée dans le format suivant HH:MM :");
 	    value = sc.nextLine();
 	    try {
 		//Heure
-		dt = dt.withHour(Integer.parseInt(value.split(":")[0]))
+		time = time.withHour(Integer.parseInt(value.split(":")[0]))
 		    //Minute
 		    .withMinute(Integer.parseInt(value.split(":")[1]));
-		if(etab.verifierTime(dt.toLocalTime())) System.out.format("%s%n", dt.toLocalTime() + " n'est pas une heure valide");
-	    } catch(NumberFormatException e){
+		if(etab.verifierTime(time)) System.out.format("%s%n", time + " n'est pas une heure valide");
+	    } catch(DateTimeParseException | NumberFormatException e){
 		System.out.format("%s%n", etab.getErrorString(e) + " n'est pas une valeur valide");
 	    }
 	}
-	dt = etab.rechercher(dt.toLocalDate());
-	return dt;
+	return etab.rechercher(time);
     }
     
     public static void menuPlanifier(Etablissement etab, Client c, LocalDateTime dt){
 	Scanner sc = new Scanner(System.in);
 	int value = -1;
+	//Propose de prendre le dernier client et/ou le dernier créneau
 	while((value < 0 || value > 1) || (c != null || dt != null)){
 	    if(c != null || dt != null)
-		System.out.format("%s%n", (c != null && dt != null) ?
-		"Vous avez actuellement un client (" + c.getNom() + ") et un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?" :
-		(c != null && dt == null) ? "Vous avez actuellement un client (" + c.getNom() + "), voulez-vous utiliser ces paramètres pour la planification ?" :
-		"Vous avez actuellement un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?"
+		//affichage selon ce qu'il y a
+		System.out.format("%s%n",
+		    (c != null && dt != null) ?
+			"Vous avez actuellement un client (" + c.getNom() + ") et un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?" :
+			(c != null && dt == null) ?
+			    "Vous avez actuellement un client (" + c.getNom() + "), voulez-vous utiliser ces paramètres pour la planification ?" :
+			    "Vous avez actuellement un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?"
 	    );
 	    try {
 		value = Integer.parseInt(sc.nextLine());
@@ -432,6 +436,7 @@ public class Main {
 		}
 	    } catch(NumberFormatException e) { System.out.format("%s%n", e + " n'est pas une valeur valide"); }
 	}
+	//Fonction selon si on prend en compte les paramètres
 	if(value == 0){
 	    System.out.format("%s%n", "Nous allons donc utiliser le client et le créneau pour faire le rendez-vous");
 	    etab.planifier(c, dt);
@@ -445,7 +450,8 @@ public class Main {
     public static void menuAfficherPlanning(Etablissement etab){
 	Scanner sc = new Scanner(System.in);
 	int value = -1;
-	while(value < 1 || value > 7){
+	//2 à 7 car on prend les valeurs des jours qui vont de 1 à 7
+	while(value < 2 || value > 7){
 	    System.out.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n", "Choisissez un jour :",
 		"[1] Lundi (fermé)",
 		"[2] Mardi",
@@ -457,13 +463,13 @@ public class Main {
 	    );
 	    try {
 		value = Integer.parseInt(sc.nextLine());
-		if(value < 1 || value > 7){
+		if(value < 2 || value > 7){
 		    System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
 		}
 	    } catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
 	}
 	//La valeur est valide
-	etab.afficher(DayOfWeek.of(value));
+	System.out.format(etab.afficher(DayOfWeek.of(value)));
     }
     
     public static void menuAfficherClient(Etablissement etab){
@@ -473,12 +479,13 @@ public class Main {
 	nom = sc.nextLine();
 	System.out.format("%s%n", "Donnez un numéro de téléphone :");
 	numeroTelephone = sc.nextLine();
-	etab.afficher(nom, numeroTelephone);
+	System.out.format(etab.afficher(nom, numeroTelephone));
     }
     
     public static void menuAfficherRendezVous(Etablissement etab, Client c){
 	Scanner sc = new Scanner(System.in);
 	int value = -1;
+	//Propose de charger la dernière interaction client
 	if(c != null){
 	    while(value < 0 || value > 1){
 		System.out.format("%s%n%s%n%s%n", "Votre dernière interaction client concernait " + c.getNom() + ", voulez-vous voir les rendez-vous de ce client ? ", "[0] Oui", "[1] Non");
@@ -489,8 +496,9 @@ public class Main {
 		    }
 		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
 	    }
-	    if(value == 0) etab.afficher(c.getNumeroClient());
+	    if(value == 0) System.out.format(etab.afficher(c.getNumeroClient()));
 	}
+	//Si on part d'un numéro précis
 	if(value != 0){
 	    value = -1;
 	    while(value < 0){
@@ -500,7 +508,7 @@ public class Main {
 		    if(value < 0) System.out.format("%s%n", "La valeur " + value + " n'est pas valide");
 		} catch(NumberFormatException e) { System.out.format("%s %s%n", e, "n'est pas une valeur valide"); }
 	    }
-	    etab.afficher(value);
+	    System.out.format(etab.afficher(value));
 	}
     }
 }
