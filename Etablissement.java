@@ -475,24 +475,24 @@ public class Etablissement {
 	int value = 0;
 	str += String.format("%s%n", "Voici les clients qui correspondent au nom ou au numéro de téléphone donnés :");
 	str += String.format("Pour le nom (%s) :%n", nom);
-	for(Client c : clients){
-	    if(c.getNom().equalsIgnoreCase(nom)) value++;
+	for(int c = 0; c < getNombreClients(); c++){
+	    if(clients[c].getNom().equalsIgnoreCase(nom)) value++;
 	    //Si il trouve
-	    str += (c.getNom().equalsIgnoreCase(nom)) ? String.format("- %s (%s, %s%s)%n", c.getNom(), c.getNumeroClient(), c.getNumeroTelephone(), c.getEmail() != null ? ", " + c.getEmail() : "") : "";
+	    str += (clients[c].getNom().equalsIgnoreCase(nom)) ? String.format("- %s (%s, %s%s)%n", clients[c].getNom(), clients[c].getNumeroClient(), clients[c].getNumeroTelephone(), clients[c].getEmail() != null ? ", " + clients[c].getEmail() : "") : "";
 	}
 	//Si il trouve rien
 	if(value == 0) str += String.format("%s%n", "Aucun client avec ce nom");
 	value = 0; //On reset la valeur
 	str += String.format("Pour le numéro de téléphone (%s) :%n", numeroTelephone);
-	for(Client c : clients){
-	    if(c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) value++;
+	for(int c = 0; c < getNombreClients(); c++){
+	    if(clients[c].getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) value++;
 	    //Si il trouve on affiche le client avec ou sans email
-	    str += (c.getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) ?
+	    str += (clients[c].getNumeroTelephone().equalsIgnoreCase(numeroTelephone)) ?
 		String.format("- %s (%s, %s%s)%n",
-			c.getNom(),
-			c.getNumeroClient(),
-			c.getNumeroTelephone(),
-			c.getEmail() != null ? ", " + c.getEmail() : ""
+			clients[c].getNom(),
+			clients[c].getNumeroClient(),
+			clients[c].getNumeroTelephone(),
+			clients[c].getEmail() != null ? ", " + clients[c].getEmail() : ""
 		) : "";
 	}
 	//Si il trouve rien
