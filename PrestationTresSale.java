@@ -12,6 +12,7 @@ public class PrestationTresSale extends Prestation {
         _3("Tâches de transpiration"),
 	_4("Tâches de graisse"),
         _5("Tâches de moisissure");
+	
         private final String label;
 
         TypeSalissure(String label) { this.label = label; }

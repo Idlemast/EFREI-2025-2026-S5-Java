@@ -396,9 +396,12 @@ public class Main {
     public static void menuPlanifier(Etablissement etab, Client c, LocalDateTime dt){
 	Scanner sc = new Scanner(System.in);
 	int value = -1;
+	System.out.format("ok ");
 	//Propose de prendre le dernier client et/ou le dernier créneau
-	while((value < 0 || value > 1) || (c != null || dt != null)){
-	    if(c != null || dt != null)
+	while((value < 0 || value > 1) && (c != null || dt != null)){
+	    System.out.format("ok2 ");
+	    if(c != null || dt != null){
+		System.out.format("ok3 ");
 		//affichage selon ce qu'il y a
 		System.out.format("%s%n",
 		    (c != null && dt != null) ?
@@ -406,22 +409,23 @@ public class Main {
 			(c != null && dt == null) ?
 			    "Vous avez actuellement un client (" + c.getNom() + "), voulez-vous utiliser ces paramètres pour la planification ?" :
 			    "Vous avez actuellement un créneau (" + dt + "), voulez-vous utiliser ces paramètres pour la planification ?"
-	    );
-	    try {
-		value = Integer.parseInt(sc.nextLine());
-		if(value < 0 || value > 1){
-		    System.out.format("%s%n", "La valeur " + value + " n'est pas un choix valide");
-		}
-	    } catch(NumberFormatException e) { System.out.format("%s%n", e + " n'est pas une valeur valide"); }
+		);
+		System.out.format("%s%n%s%n", "[0] Oui", "[1] Non");
+		try {
+		    value = Integer.parseInt(sc.nextLine());
+		    if(value < 0 || value > 1){
+			System.out.format("%s%n", "La valeur " + value + " n'est pas un choix valide");
+		    }
+		} catch(NumberFormatException e) { System.out.format("%s%n", e + " n'est pas une valeur valide"); }
+	    }
 	}
 	//Fonction selon si on prend en compte les paramètres
 	if(value == 0){
 	    System.out.format("%s%n", "Nous allons donc utiliser le client et le créneau pour faire le rendez-vous");
 	    etab.planifier(c, dt);
-	} else { System.out.format("%s%n", "Nous allons partir de 0 pour ce rendez-vous");
-	    if(c != null){
-		etab.planifier();
-	    }
+	} else {
+	    System.out.format("%s%n", "Nous allons partir de rien pour ce rendez-vous");
+	    etab.planifier();
 	}
     }
     
