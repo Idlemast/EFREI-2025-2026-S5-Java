@@ -235,7 +235,12 @@ public class Etablissement {
     //Mais faut aussi vérifier que le client est dans la liste
     private RendezVous ajouterCalc(RendezVous rdv, LocalDateTime dt){
 	//Si le client n'est pas dans la liste de client
-	if(rechercher(rdv.getClient().getNom(), rdv.getClient().getNumeroTelephone()) != null){
+	if(
+	    //S'il n'y a pas de client de l'établissement
+	    rechercher(rdv.getClient().getNom(), rdv.getClient().getNumeroTelephone()) != null
+	    //Et si le créneau est disponible
+	    && planning[calculerCreneau(dt.toLocalTime())][getDeltaJours(dt.toLocalDate())] == null
+	){
 	    //On récupère les index et on ajoute
 	    int j = getDeltaJours(dt.toLocalDate());
 	    int c = calculerCreneau(dt.toLocalTime());
